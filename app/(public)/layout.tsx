@@ -218,22 +218,22 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       </footer>
 
       {/* Navbar Inferior Mobile */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] bg-warm-white/80 backdrop-blur-xl border-t border-[#e2e8f0] pb-safe-offset-2">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] bg-[#1A3A5C]/85 backdrop-blur-xl rounded-t-[2.5rem] border-t border-white/10 pb-safe-offset-2">
         <div className="flex items-center justify-around h-16 px-4">
-          <Link href="/" className="flex flex-col items-center justify-center gap-1 text-[#1A3A5C]/60 hover:text-[#1A3A5C] transition-colors">
-            <Home className="w-6 h-6" />
+          <Link href="/" className="flex flex-col items-center justify-center gap-1 text-white/60 hover:text-white transition-colors">
+            <Home className="w-5 h-5" />
             <span className="text-[10px] font-bold uppercase tracking-tighter">Início</span>
           </Link>
-          <Link href="/sobre" className="flex flex-col items-center justify-center gap-1 text-[#1A3A5C]/60 hover:text-[#1A3A5C] transition-colors">
-            <Info className="w-6 h-6" />
+          <Link href="/sobre" className="flex flex-col items-center justify-center gap-1 text-white/60 hover:text-white transition-colors">
+            <Info className="w-5 h-5" />
             <span className="text-[10px] font-bold uppercase tracking-tighter">Sobre</span>
           </Link>
-          <Link href="/produtos" className="flex flex-col items-center justify-center gap-1 text-[#1A3A5C]/60 hover:text-[#1A3A5C] transition-colors">
-            <ShoppingBag className="w-6 h-6" />
+          <Link href="/produtos" className="flex flex-col items-center justify-center gap-1 text-white/60 hover:text-white transition-colors">
+            <ShoppingBag className="w-5 h-5" />
             <span className="text-[10px] font-bold uppercase tracking-tighter">Produtos</span>
           </Link>
-          <Link href="/contato" className="flex flex-col items-center justify-center gap-1 text-[#1A3A5C]/60 hover:text-[#1A3A5C] transition-colors">
-            <Phone className="w-6 h-6" />
+          <Link href="/contato" className="flex flex-col items-center justify-center gap-1 text-white/60 hover:text-white transition-colors">
+            <Phone className="w-5 h-5" />
             <span className="text-[10px] font-bold uppercase tracking-tighter">Contato</span>
           </Link>
         </div>
