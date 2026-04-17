@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, ShoppingCart, User, Menu, X, LogOut, Package } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X, LogOut, Package, Home, Info, Phone, ShoppingBag } from 'lucide-react';
 import { useCartStore } from '@/lib/store';
 import CartDrawer from '@/components/CartDrawer';
 import { supabase } from '@/lib/supabase';
@@ -59,33 +59,25 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
           : 'bg-warm-white/95 backdrop-blur-md shadow-md h-16'
       }`}>
         <div className="container mx-auto px-6 md:px-12 h-full flex items-center justify-between">
-          {/* Esquerda: Menu Mobile (apenas mobile) ou Placeholder */}
+          {/* Esquerda: Logo */}
           <div className="flex items-center w-1/4">
-            <button className="lg:hidden text-[#1A3A5C] p-2 -ml-2">
-              <Menu className="w-6 h-6" />
-            </button>
-            <div className="hidden lg:block w-full"></div>
-          </div>
-
-          {/* Centro: Navegação + Logo */}
-          <div className="flex-1 flex items-center justify-center gap-4 md:gap-8">
-            <nav className="hidden lg:flex items-center gap-8">
-              <Link href="/" className="text-[#1A3A5C] opacity-70 hover:opacity-100 transition-opacity text-sm font-bold uppercase tracking-wider">Home</Link>
-              <Link href="/sobre" className="text-[#1A3A5C] opacity-70 hover:opacity-100 transition-opacity text-sm font-bold uppercase tracking-wider">Sobre</Link>
-            </nav>
-
-            <Link href="/" className="relative w-36 md:w-52 h-10 md:h-14 transition-transform hover:scale-105 mx-2">
+            <Link href="/" className="relative w-28 md:w-52 h-8 md:h-14 transition-transform hover:scale-105 -ml-2 sm:ml-0">
               <Image 
                 src="https://dcdn-us.mitiendanube.com/stores/006/909/950/themes/common/logo-131855825-1762198181-7154c71cb7dfed7f98631202f8a8e5b41762198181-640-0.webp" 
                 alt="Produtos Óticas" 
                 fill 
-                className="object-contain object-center"
+                className="object-contain object-left"
                 priority
                 referrerPolicy="no-referrer"
               />
             </Link>
+          </div>
 
-            <nav className="hidden lg:flex items-center gap-8">
+          {/* Centro: Navegação Desktop */}
+          <div className="flex-1 hidden lg:flex items-center justify-center gap-8">
+            <nav className="flex items-center gap-8">
+              <Link href="/" className="text-[#1A3A5C] opacity-70 hover:opacity-100 transition-opacity text-sm font-bold uppercase tracking-wider">Home</Link>
+              <Link href="/sobre" className="text-[#1A3A5C] opacity-70 hover:opacity-100 transition-opacity text-sm font-bold uppercase tracking-wider">Sobre</Link>
               <Link href="/produtos" className="text-[#1A3A5C] opacity-70 hover:opacity-100 transition-opacity text-sm font-bold uppercase tracking-wider">Produtos</Link>
               <Link href="/contato" className="text-[#1A3A5C] opacity-70 hover:opacity-100 transition-opacity text-sm font-bold uppercase tracking-wider">Contato</Link>
             </nav>
@@ -224,6 +216,28 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
           </div>
         </div>
       </footer>
+
+      {/* Navbar Inferior Mobile */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[100] bg-warm-white/80 backdrop-blur-xl border-t border-[#e2e8f0] pb-safe-offset-2">
+        <div className="flex items-center justify-around h-16 px-4">
+          <Link href="/" className="flex flex-col items-center justify-center gap-1 text-[#1A3A5C]/60 hover:text-[#1A3A5C] transition-colors">
+            <Home className="w-6 h-6" />
+            <span className="text-[10px] font-bold uppercase tracking-tighter">Início</span>
+          </Link>
+          <Link href="/sobre" className="flex flex-col items-center justify-center gap-1 text-[#1A3A5C]/60 hover:text-[#1A3A5C] transition-colors">
+            <Info className="w-6 h-6" />
+            <span className="text-[10px] font-bold uppercase tracking-tighter">Sobre</span>
+          </Link>
+          <Link href="/produtos" className="flex flex-col items-center justify-center gap-1 text-[#1A3A5C]/60 hover:text-[#1A3A5C] transition-colors">
+            <ShoppingBag className="w-6 h-6" />
+            <span className="text-[10px] font-bold uppercase tracking-tighter">Produtos</span>
+          </Link>
+          <Link href="/contato" className="flex flex-col items-center justify-center gap-1 text-[#1A3A5C]/60 hover:text-[#1A3A5C] transition-colors">
+            <Phone className="w-6 h-6" />
+            <span className="text-[10px] font-bold uppercase tracking-tighter">Contato</span>
+          </Link>
+        </div>
+      </nav>
     </div>
   );
 }
