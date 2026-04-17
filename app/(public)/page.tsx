@@ -84,48 +84,41 @@ export default function HomePage() {
 
       {/* Trust Bar */}
       <motion.section 
-        {...fadeInUp}
-        className="h-auto md:h-48 bg-[#1A3A5C] flex flex-col md:flex-row justify-around items-center py-12 md:py-0 gap-8 md:gap-4 -mt-10 md:-mt-20 pt-16 md:pt-20 relative z-40 rounded-b-[40px] md:rounded-b-[80px] shadow-2xl border-t border-white/10"
+        initial="initial"
+        whileInView="animate"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={{
+          animate: {
+            transition: {
+              staggerChildren: 0.1
+            }
+          }
+        }}
+        className="h-auto md:h-48 bg-[#1A3A5C] grid grid-cols-2 md:flex md:flex-row justify-around items-center py-16 md:py-0 gap-y-10 gap-x-4 md:gap-4 -mt-10 md:-mt-20 pt-20 md:pt-20 relative z-40 rounded-b-[40px] md:rounded-b-[80px] shadow-2xl border-t border-white/10"
       >
-        <div className="flex items-center gap-4 group transition-transform hover:scale-105">
-          <div className="w-12 h-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-[#C8A951] group-hover:border-[#C8A951] transition-all duration-300">
-            <Truck className="w-6 h-6 text-white group-hover:text-[#1A3A5C]" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-white font-bold text-sm tracking-tight">Entrega Rápida</span>
-            <span className="text-white/60 text-[11px] uppercase tracking-widest font-semibold">Todo o Brasil</span>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-4 group transition-transform hover:scale-105">
-          <div className="w-12 h-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-[#C8A951] group-hover:border-[#C8A951] transition-all duration-300">
-            <ShieldCheck className="w-6 h-6 text-white group-hover:text-[#1A3A5C]" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-white font-bold text-sm tracking-tight">Compra Segura</span>
-            <span className="text-white/60 text-[11px] uppercase tracking-widest font-semibold">Proteção Total</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4 group transition-transform hover:scale-105">
-          <div className="w-12 h-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-[#C8A951] group-hover:border-[#C8A951] transition-all duration-300">
-            <Package className="w-6 h-6 text-white group-hover:text-[#1A3A5C]" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-white font-bold text-sm tracking-tight">Estoque Real</span>
-            <span className="text-white/60 text-[11px] uppercase tracking-widest font-semibold">Pronta Entrega</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4 group transition-transform hover:scale-105">
-          <div className="w-12 h-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-[#C8A951] group-hover:border-[#C8A951] transition-all duration-300">
-            <CreditCard className="w-6 h-6 text-white group-hover:text-[#1A3A5C]" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-white font-bold text-sm tracking-tight">Pagamento</span>
-            <span className="text-white/60 text-[11px] uppercase tracking-widest font-semibold">Até 12x s/ Juros</span>
-          </div>
-        </div>
+        {[
+          { icon: Truck, title: "Entrega Rápida", desc: "Todo o Brasil" },
+          { icon: ShieldCheck, title: "Compra Segura", desc: "Proteção Total" },
+          { icon: Package, title: "Estoque Real", desc: "Pronta Entrega" },
+          { icon: CreditCard, title: "Pagamento", desc: "Até 12x s/ Juros" }
+        ].map((benefit, idx) => (
+          <motion.div 
+            key={idx}
+            variants={{
+              initial: { opacity: 0, y: 20 },
+              animate: { opacity: 1, y: 0 }
+            }}
+            className="flex flex-col md:flex-row items-center md:items-center gap-3 md:gap-4 group transition-transform hover:scale-105"
+          >
+            <div className="w-12 h-12 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-[#C8A951] group-hover:border-[#C8A951] transition-all duration-300">
+              <benefit.icon className="w-6 h-6 text-white group-hover:text-[#1A3A5C]" />
+            </div>
+            <div className="flex flex-col items-center md:items-start text-center md:text-left">
+              <span className="text-white font-bold text-sm tracking-tight">{benefit.title}</span>
+              <span className="text-white/60 text-[10px] uppercase tracking-widest font-semibold">{benefit.desc}</span>
+            </div>
+          </motion.div>
+        ))}
       </motion.section>
 
       {/* A Marca Section (Autoridade e Confiança) */}
