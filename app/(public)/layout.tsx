@@ -165,7 +165,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       <footer className="bg-warm-white text-[#1A3A5C]/70 py-12 md:py-16 -mt-10 md:-mt-20 pt-20 md:pt-32 relative z-0">
         <div className="container mx-auto px-4 md:px-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-12 text-sm text-center sm:text-left">
           <div className="sm:col-span-2 lg:col-span-1">
-            <Link href="/" className="relative w-52 h-16 sm:w-40 sm:h-12 mb-4 inline-block">
+            <Link href="/" className="relative w-64 h-20 sm:w-40 sm:h-12 mb-4 inline-block">
               <Image 
                 src="https://dcdn-us.mitiendanube.com/stores/006/909/950/themes/common/logo-131855825-1762198181-7154c71cb7dfed7f98631202f8a8e5b41762198181-640-0.webp" 
                 alt="Produtos Óticas" 
