@@ -424,7 +424,7 @@ export default function HomePage() {
         <div className="container mx-auto">
           <div className="flex justify-between items-end mb-12">
             <div>
-              <span className="text-[#C8A951] font-bold uppercase tracking-[0.2em] text-[10px] mb-2 block">Destaques</span>
+              <span className="text-[#1A3A5C] font-bold uppercase tracking-[0.2em] text-[10px] mb-2 block">Destaques</span>
               <h2 className="text-[#1A3A5C] text-3xl md:text-4xl font-bold tracking-tight">
                 Mais Vendidos
               </h2>
@@ -494,7 +494,7 @@ export default function HomePage() {
                       {/* Badge */}
                       <div className="absolute -top-2 -left-2 z-10">
                         <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
-                          product.bestseller ? 'bg-[#C8A951] text-[#1A3A5C]' : 'bg-white/10 text-white backdrop-blur-md'
+                          product.bestseller ? 'bg-white text-[#1A3A5C] shadow-lg' : 'bg-white/10 text-white backdrop-blur-md'
                         }`}>
                           {product.bestseller ? 'Bestseller' : product.new ? 'Novo' : 'Oferta'}
                         </span>
@@ -503,7 +503,7 @@ export default function HomePage() {
                       {/* Product Info Top */}
                       <div className="mb-8 mt-4">
                         <span className="text-white/40 text-[10px] font-bold uppercase tracking-[0.2em] mb-2 block">Ref: {product.ref}</span>
-                        <h3 className="text-white text-xl font-bold tracking-tight group-hover:text-[#C8A951] transition-colors">{product.name}</h3>
+                        <h3 className="text-white text-xl font-bold tracking-tight group-hover:text-white/70 transition-colors">{product.name}</h3>
                       </div>
 
                       {/* Product Image */}
@@ -518,7 +518,7 @@ export default function HomePage() {
                       </div>
 
                       {/* CTA Button "Styled" */}
-                      <div className="w-full bg-white text-[#1A3A5C] py-4 rounded-full font-bold text-sm group-hover:bg-[#C8A951] transition-all shadow-lg mb-4">
+                      <div className="w-full bg-white text-[#1A3A5C] py-4 rounded-full font-bold text-sm group-hover:bg-[#1A3A5C] group-hover:text-white transition-all shadow-lg mb-4">
                         Ver Detalhes &rarr;
                       </div>
 
@@ -542,11 +542,11 @@ export default function HomePage() {
               <div className="flex items-center gap-3 text-[#1A3A5C]">
                 <ChevronLeft 
                   onClick={() => handleScroll('left')}
-                  className="w-5 h-5 hover:text-[#C8A951] cursor-pointer transition-colors" 
+                  className="w-5 h-5 hover:text-[#1A3A5C]/60 cursor-pointer transition-colors" 
                 />
                 <ChevronRight 
                   onClick={() => handleScroll('right')}
-                  className="w-5 h-5 hover:text-[#C8A951] cursor-pointer transition-colors" 
+                  className="w-5 h-5 hover:text-[#1A3A5C]/60 cursor-pointer transition-colors" 
                 />
               </div>
             </div>

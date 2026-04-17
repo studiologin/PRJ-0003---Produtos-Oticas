@@ -369,11 +369,11 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
                     <Image src={p.image} alt={p.name} fill className="object-contain p-4" />
                   </div>
                   <div>
-                    <span className="text-[#C8A951] font-bold text-[9px] uppercase tracking-widest mb-2 block">{p.category}</span>
+                    <span className="text-[#1A3A5C]/60 font-bold text-[9px] uppercase tracking-widest mb-2 block">{p.category}</span>
                     <h3 className="text-[#1A3A5C] font-bold text-lg mb-4 line-clamp-1">{p.name}</h3>
                     <div className="flex items-center justify-between">
                       <span className="text-[#1A3A5C] font-bold">R$ {p.price.toFixed(2).replace('.', ',')}</span>
-                      <ChevronRight className="w-4 h-4 text-[#C8A951]" />
+                      <ChevronRight className="w-4 h-4 text-[#1A3A5C]" />
                     </div>
                   </div>
                 </Link>

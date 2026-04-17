@@ -189,8 +189,8 @@ export default function ProdutosPage() {
                     />
                   </div>
                   <div className="flex flex-col h-[calc(100%-216px)]">
-                    <span className="text-[#C8A951] text-[10px] font-bold uppercase tracking-widest mb-1">{product.category}</span>
-                    <h3 className="text-[#C8A951] text-base font-bold mb-1 truncate leading-tight">{product.name}</h3>
+                    <span className="text-[#1A3A5C]/60 text-[10px] font-bold uppercase tracking-widest mb-1">{product.category}</span>
+                    <h3 className="text-[#1A3A5C] text-base font-bold mb-1 truncate leading-tight">{product.name}</h3>
                     <p className="text-[#1A3A5C]/40 text-xs mb-3">Ref: {product.ref}</p>
                     <div className="flex items-center justify-between mt-auto pt-2">
                       <div className="text-[#1A3A5C] font-black text-xl">R$ {product.price.toFixed(2).replace('.', ',')}</div>
@@ -199,7 +199,7 @@ export default function ProdutosPage() {
                         className={`p-2.5 rounded-full transition-all duration-300 shadow-sm ${
                           addedItems.includes(product.id)
                             ? 'bg-[#2D7D62] text-white scale-110'
-                            : 'bg-[#C8A951] text-white hover:bg-[#1A3A5C] hover:scale-110'
+                            : 'bg-[#1A3A5C] text-white hover:bg-[#C8A951] hover:scale-110'
                         }`}
                         title="Adicionar ao Carrinho"
                       >
