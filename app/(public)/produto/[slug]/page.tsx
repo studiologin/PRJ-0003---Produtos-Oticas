@@ -251,8 +251,8 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
 
         {/* Second Row: Tabs + Shipping */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start mt-16 pt-16 border-t border-[#DDE1E9]">
-          {/* Left: Tabs (Description / Specs) */}
-          <div className="space-y-8">
+          {/* Tabs (Description / Specs) - Second on Mobile, First on Desktop */}
+          <div className="space-y-8 order-2 lg:order-1">
             <div className="flex gap-12 border-b border-[#DDE1E9] mb-12">
               <button 
                 onClick={() => setActiveTab('descricao')}
@@ -294,8 +294,8 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
             </div>
           </div>
 
-          {/* Right: Shipping Calculator */}
-          <div className="space-y-6">
+          {/* Shipping Calculator - First on Mobile, Second on Desktop */}
+          <div className="space-y-6 order-1 lg:order-2">
             <div className="pt-2 space-y-4">
               <div className="flex flex-col gap-2">
                 <label className="text-[10px] font-bold text-[#1A3A5C]/40 uppercase tracking-[0.2em] mb-1">Calcular Frete e Prazo</label>
