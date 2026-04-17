@@ -26,11 +26,25 @@ export default function LoginPage() {
   const [userType, setUserType] = useState<'pf' | 'pj'>('pf');
 
   useEffect(() => {
-    const handleMessage = (event: MessageEvent) => {
+    const handleMessage = async (event: MessageEvent) => {
       // Validate origin can be added here if needed for security
       if (event.data?.type === 'OAUTH_AUTH_SUCCESS') {
-        router.refresh();
-        router.push('/carrinho');
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', user.id)
+            .single();
+            
+          if (profile?.role === 'admin') {
+            router.push('/admin');
+          } else {
+            router.push('/conta');
+          }
+        } else {
+          router.push('/carrinho');
+        }
       }
     };
     window.addEventListener('message', handleMessage);
@@ -44,26 +58,27 @@ export default function LoginPage() {
 
     try {
       if (mode === 'login') {
-        // Intercept mock user for testing purpose
-        if (email.trim().toLowerCase() === 'manoel@gmail.com' && password === '123456') {
-          sessionStorage.setItem('mock_auth', 'true');
-          router.push('/conta');
-          return;
-        }
-
-        // Intercept mock admin
-        if (email.trim().toLowerCase() === 'admin@gmail.com' && password === '123456') {
-          sessionStorage.setItem('mock_auth_admin', 'true');
-          router.push('/admin');
-          return;
-        }
-
-        const { error: loginError } = await supabase.auth.signInWithPassword({
+        const { data: authData, error: loginError } = await supabase.auth.signInWithPassword({
           email,
           password
         });
         if (loginError) throw loginError;
-        router.push('/carrinho');
+        
+        if (authData.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', authData.user.id)
+            .single();
+            
+          if (profile?.role === 'admin') {
+            router.push('/admin');
+          } else {
+            router.push('/conta'); // Client dashboard
+          }
+        } else {
+          router.push('/carrinho');
+        }
       } else {
         // Validation
         if (password !== confirmPassword) {

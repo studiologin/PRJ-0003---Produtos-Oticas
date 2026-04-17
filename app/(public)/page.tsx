@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Truck, ShieldCheck, Package, CreditCard, Search, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
 import { motion, useAnimation } from 'motion/react';
-import { products as featuredProducts } from '@/lib/products';
+import { products as mockProducts, getFeaturedProducts, type Product } from '@/lib/products';
 import { useFavoritesStore } from '@/lib/store';
 
 const fadeInUp = {
@@ -16,8 +16,18 @@ const fadeInUp = {
 };
 
 export default function HomePage() {
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const controls = useAnimation();
   const { toggleFavorite, isFavorite } = useFavoritesStore();
+
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      const data = await getFeaturedProducts();
+      setFeaturedProducts(data);
+    };
+    fetchFeatured();
+  }, []);
+
   const [scrollX, setScrollX] = useState(0);
   const maxScroll = -1200; // This should ideally be calculated based on content width
 

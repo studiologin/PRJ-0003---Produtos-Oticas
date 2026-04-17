@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ChevronRight, ShieldCheck, Truck, RotateCcw, Package, Minus, Plus, ShoppingCart, Star, MapPin, Heart } from 'lucide-react';
 import { motion } from 'motion/react';
-import { products, type Product } from '@/lib/products';
+import { getProductBySlug, getProducts, type Product } from '@/lib/products';
 import { useFavoritesStore, useCartStore } from '@/lib/store';
 
 const fadeInUp = {
@@ -18,19 +18,54 @@ const fadeInUp = {
 
 export default function ProductDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params);
-  const product = products.find((p) => p.slug === slug);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+  
   const { toggleFavorite, isFavorite } = useFavoritesStore();
   const addItem = useCartStore(state => state.addItem);
 
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<'descricao' | 'especificacoes'>('descricao');
-  const [selectedColor, setSelectedColor] = useState<string | null>(product?.colors?.[0]?.name || null);
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
   
   // Shipping states
   const [cep, setCep] = useState('');
   const [isCalculating, setIsCalculating] = useState(false);
   const [shippingOptions, setShippingOptions] = useState<any[]>([]);
   const [shippingError, setShippingError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const data = await getProductBySlug(slug);
+      setProduct(data);
+      
+      if (data) {
+        setSelectedColor(data.colors?.[0]?.name || null);
+        const allProducts = await getProducts();
+        const related = allProducts
+          .filter((p) => p.category === data.category && p.id !== data.id)
+          .slice(0, 4);
+        setRelatedProducts(related);
+      }
+      
+      setLoading(false);
+    };
+    fetchData();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#F8F9FB] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1A3A5C]"></div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    notFound();
+  }
 
   const handleCalculateShipping = async () => {
     if (cep.length < 8) return;
@@ -60,13 +95,6 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
     }
   };
 
-  if (!product) {
-    notFound();
-  }
-
-  const relatedProducts = products
-    .filter((p) => p.category === product.category && p.id !== product.id)
-    .slice(0, 4);
 
   return (
     <div className="bg-[#F8F9FB] min-h-screen">

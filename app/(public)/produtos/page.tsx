@@ -4,8 +4,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Search, ShoppingCart, Check } from 'lucide-react';
 import { motion } from 'motion/react';
-import { products, type Product } from '@/lib/products';
-import { useState } from 'react';
+import { getProducts, type Product } from '@/lib/products';
+import { useState, useEffect } from 'react';
 import { useCartStore } from '@/lib/store';
 
 const fadeInUp = {
@@ -16,11 +16,24 @@ const fadeInUp = {
 };
 
 export default function ProdutosPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const [addedItems, setAddedItems] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const addItem = useCartStore((state) => state.addItem);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      const data = await getProducts();
+      setProducts(data);
+      setLoading(false);
+    };
+    fetchProducts();
+  }, []);
+
 
   const filteredProducts = products.filter(product => 
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
