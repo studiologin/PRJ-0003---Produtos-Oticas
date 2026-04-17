@@ -358,12 +358,12 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
         <section className="py-24 bg-[#F8F9FB]">
           <div className="container mx-auto px-6">
             <h2 className="text-[#1A3A5C] text-3xl font-bold tracking-tight mb-12">Quem viu também viu</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="flex overflow-x-auto pb-4 gap-6 snap-x snap-mandatory lg:grid lg:grid-cols-4 lg:overflow-x-visible lg:gap-8 scrollbar-hide">
               {relatedProducts.map((p) => (
                 <Link 
                   href={`/produto/${p.slug}`} 
                   key={p.id}
-                  className="bg-white rounded-[32px] p-6 shadow-sm hover:shadow-xl transition-all duration-500 group border border-white"
+                  className="min-w-[280px] lg:min-w-0 snap-center bg-white rounded-[32px] p-6 shadow-sm hover:shadow-xl transition-all duration-500 group border border-white"
                 >
                   <div className="aspect-square relative mb-6 group-hover:scale-105 transition-transform duration-500">
                     <Image src={p.image} alt={p.name} fill className="object-contain p-4" />
