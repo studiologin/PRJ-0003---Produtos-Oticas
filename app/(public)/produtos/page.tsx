@@ -81,11 +81,21 @@ export default function ProdutosPage() {
     <div className="min-h-screen bg-warm-bg">
       {/* Banner Section - Sem texto, apenas imagem, ocupando a altura da tela */}
       <section className="relative h-screen w-full overflow-hidden rounded-b-[40px] md:rounded-b-[80px] shadow-xl z-50">
+        {/* Desktop Banner */}
         <Image 
           src="https://dcdn-us.mitiendanube.com/stores/006/909/950/products/freepik__-promptname-aprimoramento-ptico-premium-preservao-__92197-882d361adfa5e7f14117655565073913-1024-1024.webp" 
-          alt="Produtos Óticas Banner" 
+          alt="Produtos Óticas Banner Desktop" 
           fill 
-          className="object-cover object-center"
+          className="hidden md:block object-cover object-center"
+          priority
+          referrerPolicy="no-referrer"
+        />
+        {/* Mobile Banner */}
+        <Image 
+          src="https://wwikdikgmrsfusdyixfg.supabase.co/storage/v1/object/public/avatars/freepik__-promptname-campanha-ptica-composio-de-kits-luxo-h__27488.png" 
+          alt="Produtos Óticas Banner Mobile" 
+          fill 
+          className="block md:hidden object-cover object-center"
           priority
           referrerPolicy="no-referrer"
         />
