@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import ProductImageManager from '../components/ProductImageManager';
 
 export default function EditarProdutoPage() {
   const router = useRouter();
@@ -324,28 +325,13 @@ export default function EditarProdutoPage() {
            {activeTab === 'imagens' && (
              <div className="space-y-8 animate-in fade-in">
                <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-4">
-                 <h2 className="text-lg font-bold text-[#1A3A5C]">Imagem do Produto</h2>
-                 <span className="text-sm text-[#4A5568]">URL da imagem JPG, WEBP</span>
+                 <h2 className="text-lg font-bold text-[#1A3A5C]">Galeria de Imagens</h2>
+                 <span className="text-sm text-[#4A5568]">Arraste as fotos do produto</span>
                </div>
                
-               <div className="space-y-6">
-                  <div>
-                    <label className="block text-xs font-bold text-[#4A5568] uppercase tracking-wide mb-2">URL da Imagem</label>
-                    <input 
-                      name="image"
-                      value={formData.image || ''}
-                      onChange={handleInputChange}
-                      type="text" 
-                      placeholder="https://exemplo.com/imagem.jpg" 
-                      className="input w-full" 
-                    />
-                  </div>
-                  {formData.image && (
-                    <div className="w-48 h-48 rounded-2xl overflow-hidden border border-[#e2e8f0] relative">
-                      <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
-                    </div>
-                  )}
-               </div>
+               <ProductImageManager 
+                 productId={productId}
+               />
              </div>
            )}
 

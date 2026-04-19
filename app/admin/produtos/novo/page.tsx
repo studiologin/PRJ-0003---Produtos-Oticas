@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import ProductImageManager from '../components/ProductImageManager';
 
 export default function NovoProdutoPage() {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function NovoProdutoPage() {
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoadingDuplicate, setIsLoadingDuplicate] = useState(false);
+  const [pendingImages, setPendingImages] = useState<any[]>([]);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -114,21 +116,62 @@ export default function NovoProdutoPage() {
         return;
       }
 
+      // Encontrar a imagem de capa nas pendentes para atualizar o formData
+      const coverImage = pendingImages.find(img => img.is_cover);
+
       const productToSave = {
         ...formData,
-        price: parseFloat(formData.price.replace(',', '.')),
-        promo_price: formData.promo_price ? parseFloat(formData.promo_price.replace(',', '.')) : null,
+        price: parseFloat(formData.price.toString().replace(',', '.')),
+        promo_price: formData.promo_price ? parseFloat(formData.promo_price.toString().replace(',', '.')) : null,
       };
 
       // Remover o ID se existir (no caso de duplicação)
-      const { id, ...saveData } = productToSave as any;
+      const { id: oldId, ...saveData } = productToSave as any;
 
       const { data, error } = await supabase
         .from('products')
         .insert([saveData])
-        .select();
+        .select()
+        .single();
 
       if (error) throw error;
+      const newProductId = data.id;
+
+      // 2. Realizar upload das fotos se houver
+      if (pendingImages.length > 0) {
+        for (const img of pendingImages) {
+          if (img.file) {
+             const fileExt = img.file.name.split('.').pop();
+             const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
+             const filePath = `${newProductId}/${fileName}`;
+
+             const { error: uploadError } = await supabase.storage
+               .from('products')
+               .upload(filePath, img.file);
+
+             if (uploadError) {
+               console.error('Erro no upload:', uploadError);
+               continue;
+             }
+
+             const { data: { publicUrl } } = supabase.storage
+               .from('products')
+               .getPublicUrl(filePath);
+
+             // Adicionar na tabela product_images
+             await supabase.from('product_images').insert([{
+               product_id: newProductId,
+               url: publicUrl,
+               is_cover: img.is_cover
+             }]);
+
+             // Se for a capa, atualizar a tabela principal de produtos
+             if (img.is_cover) {
+               await supabase.from('products').update({ image: publicUrl }).eq('id', newProductId);
+             }
+          }
+        }
+      }
 
       router.push('/admin/produtos');
     } catch (err) {
@@ -323,28 +366,13 @@ export default function NovoProdutoPage() {
            {activeTab === 'imagens' && (
              <div className="space-y-8 animate-in fade-in">
                <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-4">
-                 <h2 className="text-lg font-bold text-[#1A3A5C]">Imagem do Produto</h2>
-                 <span className="text-sm text-[#4A5568]">URL da imagem JPG, WEBP</span>
+                 <h2 className="text-lg font-bold text-[#1A3A5C]">Galeria de Imagens</h2>
+                 <span className="text-sm text-[#4A5568]">Arraste as fotos do produto</span>
                </div>
                
-               <div className="space-y-6">
-                  <div>
-                    <label className="block text-xs font-bold text-[#4A5568] uppercase tracking-wide mb-2">URL da Imagem</label>
-                    <input 
-                      name="image"
-                      value={formData.image || ''}
-                      onChange={handleInputChange}
-                      type="text" 
-                      placeholder="https://exemplo.com/imagem.jpg" 
-                      className="input w-full" 
-                    />
-                  </div>
-                  {formData.image && (
-                    <div className="w-48 h-48 rounded-2xl overflow-hidden border border-[#e2e8f0] relative">
-                      <img src={formData.image} alt="Preview" className="w-full h-full object-cover" />
-                    </div>
-                  )}
-               </div>
+               <ProductImageManager 
+                 onImagesChange={(images) => setPendingImages(images)}
+               />
              </div>
            )}
 
