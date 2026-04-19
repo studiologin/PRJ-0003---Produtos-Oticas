@@ -1,11 +1,34 @@
 'use client';
 
-import { ArrowLeft, Save, Image as ImageIcon, Plus } from 'lucide-react';
+import { ArrowLeft, Save, Image as ImageIcon, Plus, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
 
 export default function NovoProdutoPage() {
   const [activeTab, setActiveTab] = useState('geral');
+  const [categories, setCategories] = useState<any[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('categories')
+          .select('id, name')
+          .order('name');
+        
+        if (error) throw error;
+        setCategories(data || []);
+      } catch (err) {
+        console.error('Erro ao buscar categorias:', err);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 h-full flex flex-col">
@@ -68,7 +91,7 @@ export default function NovoProdutoPage() {
                    <label className="block text-xs font-bold text-[#4A5568] uppercase tracking-wide mb-2">Nome do Produto *</label>
                    <input type="text" placeholder="Ex: Lente Acuvue Oasys" className="input w-full" />
                  </div>
-
+ 
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                    <div>
                      <label className="block text-xs font-bold text-[#4A5568] uppercase tracking-wide mb-2">SKU / Ref *</label>
@@ -76,15 +99,24 @@ export default function NovoProdutoPage() {
                    </div>
                    <div>
                      <label className="block text-xs font-bold text-[#4A5568] uppercase tracking-wide mb-2">Categoria *</label>
-                     <select className="input w-full">
-                       <option value="">Selecione uma categoria...</option>
-                       <option value="lentes">Lentes de Contato</option>
-                       <option value="solucoes">Soluções de Limpeza</option>
-                       <option value="armacoes">Armações</option>
-                       <option value="acessorios">Acessórios</option>
-                     </select>
+                     <div className="relative">
+                       <select className="input w-full appearance-none" disabled={loadingCategories}>
+                         <option value="">
+                           {loadingCategories ? 'Carregando categorias...' : 'Selecione uma categoria...'}
+                         </option>
+                         {!loadingCategories && categories.map(category => (
+                           <option key={category.id} value={category.id}>
+                             {category.name}
+                           </option>
+                         ))}
+                       </select>
+                       {loadingCategories && (
+                         <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1A3A5C] animate-spin" />
+                       )}
+                     </div>
                    </div>
                  </div>
+     </div>
 
                  <div>
                    <label className="block text-xs font-bold text-[#4A5568] uppercase tracking-wide mb-2">Descrição Breve</label>

@@ -19,7 +19,8 @@ import {
   Search,
   BarChart2,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Tag
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -88,6 +89,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: 'Produtos', href: '/admin/produtos', icon: Package },
     { name: 'Clientes', href: '/admin/clientes', icon: Users },
     { name: 'Relatórios', href: '/admin/relatorios', icon: BarChart2 },
+    { name: 'Categorias', href: '/admin/categorias', icon: Tag },
     { name: 'Configurações', href: '/admin/configuracoes', icon: Settings },
   ];
 
