@@ -4,6 +4,9 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Produtos Óticas | Insumos Ópticos B2B/B2C',
   description: 'Tudo o que sua ótica precisa, em um só lugar. Distribuição e venda de insumos ópticos.',
+  icons: {
+    icon: '/favicon.png',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

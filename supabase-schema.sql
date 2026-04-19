@@ -1,10 +1,9 @@
--- 1. Tabela de Perfil de Usuários (Estende auth.users)
 CREATE TABLE IF NOT EXISTS public.profiles (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   full_name TEXT NOT NULL,
   cpf_cnpj TEXT NOT NULL,
-  whatsapp TEXT,
-  type TEXT NOT NULL CHECK (type IN ('pf', 'pj')),
+  whatsapp TEXT NOT NULL,
+  type TEXT NOT NULL CHECK (type IN ('pf', 'pj')) DEFAULT 'pf',
   role TEXT NOT NULL DEFAULT 'client' CHECK (role IN ('client', 'admin')),
   company_name TEXT,
   b2b_group_id UUID,
@@ -119,20 +118,26 @@ CREATE POLICY "Admins veem todos os pedidos" ON public.orders FOR ALL USING (
   EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
 );
 
--- 7. Triggers de Autofill (Opcional, mas recomendado)
+-- 7. Triggers de Autofill
 -- Criar perfil automaticamente no cadastro do Auth
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 BEGIN
-  INSERT INTO public.profiles (id, full_name, cpf_cnpj, type, role)
-  VALUES (new.id, new.raw_user_meta_data->>'full_name', '', 'pf', 'client');
+  INSERT INTO public.profiles (id, full_name, role, type)
+  VALUES (
+    new.id, 
+    COALESCE(new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'name', 'Usuário'),
+    'client',
+    'pf'
+  )
+  ON CONFLICT (id) DO NOTHING;
   RETURN new;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- CREATE TRIGGER on_auth_user_created
---   AFTER INSERT ON auth.users
---   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+CREATE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- 8. Dados Iniciais (Seed)
 
@@ -145,7 +150,6 @@ VALUES
 ON CONFLICT (name) DO NOTHING;
 
 -- 8.2 Inserir Produtos Iniciais
--- Nota: Usando subquery para buscar o ID da categoria pelo nome
 INSERT INTO public.products (slug, name, ref, price, category_id, short_description, description, image, bestseller, new, colors, specifications, stock_quantity)
 VALUES 
   (
@@ -189,3 +193,4 @@ VALUES
     35
   )
 ON CONFLICT (slug) DO NOTHING;
+
