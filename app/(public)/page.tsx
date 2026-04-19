@@ -309,7 +309,7 @@ export default function HomePage() {
         {/* Background Image - Sharp but subtle */}
         <div className="absolute inset-0 z-0">
           <Image 
-            src="https://jandmwnmaojswfwlrsva.supabase.co/storage/v1/object/public/Imagens%20do%20Site/Produtos-Oticas-Catalago-BG.png" 
+            src="https://jandmwnmaojswfwlrsva.supabase.co/storage/v1/object/public/Imagens%20do%20Site/bg-po.png" 
             alt="Optical Lab Background" 
             fill 
             className="object-cover"
