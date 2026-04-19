@@ -383,7 +383,7 @@ export default function HomePage() {
                     className="relative w-72 md:w-[480px] aspect-[4/3] z-10"
                   >
                     <Image 
-                      src="https://jandmwnmaojswfwlrsva.supabase.co/storage/v1/object/public/Imagens%20do%20Site/Produtos-Oticas-Catalago.png" 
+                      src="https://jandmwnmaojswfwlrsva.supabase.co/storage/v1/object/public/Imagens%20do%20Site/suamarca-PO.png" 
                       alt="Personalized Case and Cloth" 
                       fill 
                       className="object-contain drop-shadow-[0_25px_25px_rgba(0,0,0,0.15)]"
