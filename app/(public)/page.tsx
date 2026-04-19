@@ -396,7 +396,7 @@ export default function HomePage() {
                     initial={{ opacity: 0, x: 30 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
-                    className="absolute -top-4 md:top-0 -right-4 md:-right-12 z-20 bg-white/80 backdrop-blur-md p-5 rounded-[24px] shadow-2xl border border-white/50 max-w-[180px]"
+                    className="absolute top-0 md:top-4 right-0 md:right-8 z-20 bg-white/80 backdrop-blur-md p-5 rounded-[24px] shadow-2xl border border-white/50 max-w-[180px]"
                   >
                     <p className="text-[10px] font-bold text-[#1A3A5C] uppercase tracking-wider mb-2">Acabamento Superior</p>
                     <p className="text-[10px] text-[#1A3A5C]/60 leading-relaxed">Estojos premium com interior aveludado para proteção total.</p>
@@ -408,7 +408,7 @@ export default function HomePage() {
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: 0.2 }}
-                    className="absolute -bottom-4 md:bottom-0 -left-4 md:-left-12 z-20 bg-white/80 backdrop-blur-md p-5 rounded-[24px] shadow-2xl border border-white/50 max-w-[180px]"
+                    className="absolute bottom-0 md:bottom-4 left-0 md:left-8 z-20 bg-white/80 backdrop-blur-md p-5 rounded-[24px] shadow-2xl border border-white/50 max-w-[180px]"
                   >
                     <p className="text-[10px] font-bold text-[#1A3A5C] uppercase tracking-wider mb-2">Sua Logo em HD</p>
                     <p className="text-[10px] text-[#1A3A5C]/60 leading-relaxed">Personalização têxtil e metálica com fidelidade de cores.</p>
