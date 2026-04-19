@@ -1,21 +1,21 @@
 'use client';
 
-import { ArrowLeft, Save, Image as ImageIcon, Plus, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, Image as ImageIcon, Plus, Loader2, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 
-export default function NovoProdutoPage() {
+export default function EditarProdutoPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const duplicateId = searchParams.get('duplicate');
+  const params = useParams();
+  const productId = params.id;
 
   const [activeTab, setActiveTab] = useState('geral');
   const [categories, setCategories] = useState<any[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [isLoadingDuplicate, setIsLoadingDuplicate] = useState(false);
+  const [isLoadingProduct, setIsLoadingProduct] = useState(true);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -30,16 +30,16 @@ export default function NovoProdutoPage() {
     slug: '',
     image: '',
     bestseller: false,
-    new: true,
+    new: false,
     is_active: true
   });
 
   useEffect(() => {
     fetchCategories();
-    if (duplicateId) {
-      fetchProductToDuplicate(duplicateId);
+    if (productId) {
+      fetchProductData(productId as string);
     }
-  }, [duplicateId]);
+  }, [productId]);
 
   const fetchCategories = async () => {
     try {
@@ -57,9 +57,9 @@ export default function NovoProdutoPage() {
     }
   };
 
-  const fetchProductToDuplicate = async (id: string) => {
+  const fetchProductData = async (id: string) => {
     try {
-      setIsLoadingDuplicate(true);
+      setIsLoadingProduct(true);
       const { data, error } = await supabase
         .from('products')
         .select('*')
@@ -70,17 +70,18 @@ export default function NovoProdutoPage() {
       if (data) {
         setFormData({
           ...data,
-          name: `${data.name} (Cópia)`,
-          ref: `${data.ref}-COPY`,
-          slug: `${data.slug}-copia`,
           price: data.price.toString(),
           promo_price: data.promo_price ? data.promo_price.toString() : '',
         });
       }
     } catch (err) {
-      console.error('Erro ao buscar produto para duplicar:', err);
+      console.error('Erro ao buscar produto:', err);
+      if (err instanceof Error && (err as any).code === 'PGRST116') {
+        alert('Produto não encontrado.');
+        router.push('/admin/produtos');
+      }
     } finally {
-      setIsLoadingDuplicate(false);
+      setIsLoadingProduct(false);
     }
   };
 
@@ -90,17 +91,6 @@ export default function NovoProdutoPage() {
       ...prev,
       [name]: type === 'number' ? Number(value) : value
     }));
-
-    // Auto-generate slug from name
-    if (name === 'name') {
-      const slug = value
-        .toLowerCase()
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^\w\s-]/g, '')
-        .replace(/\s+/g, '-');
-      setFormData(prev => ({ ...prev, slug }));
-    }
   };
 
   const handleSave = async () => {
@@ -116,34 +106,45 @@ export default function NovoProdutoPage() {
 
       const productToSave = {
         ...formData,
-        price: parseFloat(formData.price.replace(',', '.')),
-        promo_price: formData.promo_price ? parseFloat(formData.promo_price.replace(',', '.')) : null,
+        price: parseFloat(formData.price.toString().replace(',', '.')),
+        promo_price: formData.promo_price ? parseFloat(formData.promo_price.toString().replace(',', '.')) : null,
       };
 
-      // Remover o ID se existir (no caso de duplicação)
-      const { id, ...saveData } = productToSave as any;
-
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('products')
-        .insert([saveData])
-        .select();
+        .update(productToSave)
+        .eq('id', productId);
 
       if (error) throw error;
 
+      alert('Produto atualizado com sucesso!');
       router.push('/admin/produtos');
     } catch (err) {
-      console.error('Erro ao salvar produto:', err);
-      alert('Erro ao salvar produto.');
+      console.error('Erro ao atualizar produto:', err);
+      alert('Erro ao atualizar produto.');
     } finally {
       setIsSaving(false);
     }
   };
 
-  if (isLoadingDuplicate) {
+  const handleDelete = async () => {
+    if (!confirm('Tem certeza que deseja excluir este produto?')) return;
+    
+    try {
+      const { error } = await supabase.from('products').delete().eq('id', productId);
+      if (error) throw error;
+      router.push('/admin/produtos');
+    } catch (err) {
+      console.error('Erro ao excluir produto:', err);
+      alert('Erro ao excluir produto.');
+    }
+  };
+
+  if (isLoadingProduct) {
     return (
-      <div className="flex flex-col items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 text-[#1A3A5C] animate-spin mb-4" />
-        <p className="text-[#1A3A5C]/60">Carregando dados do produto original...</p>
+      <div className="flex flex-col items-center justify-center h-full min-h-[400px]">
+        <Loader2 className="w-10 h-10 text-[#1A3A5C] animate-spin mb-4" />
+        <p className="text-[#1A3A5C]/60 font-medium">Buscando dados do produto...</p>
       </div>
     );
   }
@@ -156,17 +157,17 @@ export default function NovoProdutoPage() {
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-[#1A3A5C] mb-1">
-              {duplicateId ? 'Duplicar Produto' : 'Novo Produto'}
-            </h1>
-            <p className="text-[#1A3A5C]/60 text-sm">
-              {duplicateId ? 'Revise os dados antes de criar a cópia.' : 'Cadastre um novo produto no catálogo.'}
-            </p>
+            <h1 className="text-2xl font-bold text-[#1A3A5C] mb-1">Editar Produto</h1>
+            <p className="text-[#1A3A5C]/60 text-sm">Atualize as informações do produto ID: {productId}</p>
           </div>
         </div>
         <div className="flex items-center gap-3 w-full sm:w-auto">
-          <button onClick={() => router.back()} className="btn-outline btn-md w-full sm:w-auto" disabled={isSaving}>
-            Cancelar
+          <button 
+            onClick={handleDelete}
+            className="btn-outline border-red-200 text-red-600 hover:bg-red-50 btn-md w-full sm:w-auto flex items-center justify-center gap-2"
+          >
+            <Trash2 className="w-4 h-4" />
+            <span>Excluir</span>
           </button>
           <button 
             onClick={handleSave}
@@ -174,7 +175,7 @@ export default function NovoProdutoPage() {
             className="btn-primary btn-md w-full sm:w-auto flex items-center justify-center gap-2 font-medium"
           >
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            <span>Salvar Produto</span>
+            <span>Salvar Alterações</span>
           </button>
         </div>
       </div>
