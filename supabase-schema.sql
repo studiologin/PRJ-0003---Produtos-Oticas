@@ -39,7 +39,18 @@ CREATE TABLE IF NOT EXISTS public.products (
   colors JSONB DEFAULT '[]'::jsonb,
   specifications JSONB DEFAULT '[]'::jsonb,
   stock_quantity INTEGER DEFAULT 0,
+  min_stock INTEGER DEFAULT 5,
   is_active BOOLEAN DEFAULT true,
+  promo_price DECIMAL(10,2),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+-- 5.2.1 Imagens do Produto
+CREATE TABLE IF NOT EXISTS public.product_images (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  product_id BIGINT NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
+  url TEXT NOT NULL,
+  is_cover BOOLEAN DEFAULT false,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -92,6 +103,7 @@ CREATE TABLE IF NOT EXISTS public.order_items (
 -- Habilitar RLS
 ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.product_images ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.addresses ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
@@ -109,6 +121,10 @@ CREATE POLICY "Usuários veem itens dos próprios pedidos" ON public.order_items
 
 -- Políticas de Admin (Acesso Total)
 CREATE POLICY "Admins gerenciam tudo" ON public.products FOR ALL USING (
+  EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
+);
+CREATE POLICY "Leitura pública de imagens" ON public.product_images FOR SELECT TO anon, authenticated USING (true);
+CREATE POLICY "Admins gerenciam imagens" ON public.product_images FOR ALL USING (
   EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND role = 'admin')
 );
 CREATE POLICY "Admins gerenciam categorias" ON public.categories FOR ALL USING (
