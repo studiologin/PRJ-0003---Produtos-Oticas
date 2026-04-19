@@ -116,7 +116,6 @@ export default function NovoProdutoPage() {
                      </div>
                    </div>
                  </div>
-     </div>
 
                  <div>
                    <label className="block text-xs font-bold text-[#4A5568] uppercase tracking-wide mb-2">Descrição Breve</label>
