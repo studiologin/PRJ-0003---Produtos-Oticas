@@ -25,6 +25,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
   const { toggleFavorite, isFavorite } = useFavoritesStore();
   const addItem = useCartStore(state => state.addItem);
 
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<'descricao' | 'especificacoes'>('descricao');
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
@@ -115,12 +116,13 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
           {/* Left: Gallery */}
           <div className="space-y-6">
             <motion.div 
+              key={activeImageIndex}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               className="aspect-square relative bg-white rounded-[40px] shadow-sm border border-white overflow-hidden group"
             >
               <Image 
-                src={product.image} 
+                src={product.images?.[activeImageIndex] || product.image} 
                 alt={product.name} 
                 fill 
                 className="object-contain p-12 group-hover:scale-110 transition-transform duration-700"
@@ -134,17 +136,21 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
               )}
             </motion.div>
             
-            {/* Thumbnails (Simulated) */}
+            {/* Thumbnails */}
             <div className="grid grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className={`aspect-square relative bg-white rounded-2xl border-2 transition-all cursor-pointer hover:border-[#C8A951] ${i === 1 ? 'border-[#C8A951]' : 'border-transparent'}`}>
+              {product.images?.map((img, i) => (
+                <button 
+                  key={i} 
+                  onClick={() => setActiveImageIndex(i)}
+                  className={`aspect-square relative bg-white rounded-2xl border-2 transition-all cursor-pointer hover:border-[#C8A951] ${activeImageIndex === i ? 'border-[#C8A951]' : 'border-transparent'}`}
+                >
                   <Image 
-                    src={product.image} 
-                    alt={`${product.name} thumbnail ${i}`}
+                    src={img} 
+                    alt={`${product.name} thumbnail ${i + 1}`}
                     fill 
-                    className="object-contain p-2 opacity-60"
+                    className={`object-contain p-2 ${activeImageIndex === i ? 'opacity-100' : 'opacity-60'}`}
                   />
-                </div>
+                </button>
               ))}
             </div>
           </div>

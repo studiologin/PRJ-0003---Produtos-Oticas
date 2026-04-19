@@ -21,6 +21,7 @@ export interface Product {
     value: string;
   }[];
   stock_quantity?: number;
+  images?: string[];
 }
 
 export interface Category {
@@ -88,7 +89,10 @@ const mapProduct = (p: any): Product => ({
   new: p.new,
   colors: p.colors,
   specifications: p.specifications,
-  stock_quantity: p.stock_quantity
+  stock_quantity: p.stock_quantity,
+  images: p.product_images 
+    ? p.product_images.sort((a: any, b: any) => (b.is_cover ? 1 : 0) - (a.is_cover ? 1 : 0)).map((img: any) => img.url)
+    : (p.image ? [p.image] : [])
 });
 
 export async function getProducts(): Promise<Product[]> {
@@ -113,7 +117,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   try {
     const { data, error } = await supabase
       .from('products')
-      .select('*, categories(name)')
+      .select('*, categories(name), product_images(url, is_cover)')
       .eq('slug', slug)
       .single();
 
