@@ -1,11 +1,46 @@
 'use client';
 
-import { Package, Plus, Search, Filter, MoreHorizontal, ArrowUpDown, Download, Image as ImageIcon, CheckCircle2 } from 'lucide-react';
+import { 
+  Package, 
+  Plus, 
+  Search, 
+  Filter, 
+  MoreHorizontal, 
+  ArrowUpDown, 
+  Download, 
+  Image as ImageIcon, 
+  CheckCircle2, 
+  Edit2, 
+  Copy, 
+  Trash2, 
+  EyeOff,
+  AlertCircle
+} from 'lucide-react';
 import Link from 'next/link';
 import { products } from '@/lib/products';
 import Image from 'next/image';
+import { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function AdminProdutosPage() {
+  const [openMenuId, setOpenMenuId] = useState<number | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenuId(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const toggleMenu = (e: React.MouseEvent, id: number) => {
+    e.stopPropagation();
+    setOpenMenuId(openMenuId === id ? null : id);
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 h-full flex flex-col">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -112,9 +147,47 @@ export default function AdminProdutosPage() {
                     </div>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button className="p-2 text-[#9AA3B0] hover:text-[#1A3A5C] hover:bg-[#e2e8f0] rounded-lg transition-colors">
-                      <MoreHorizontal className="w-5 h-5" />
-                    </button>
+                    <div className="relative">
+                      <button 
+                        onClick={(e) => toggleMenu(e, product.id)}
+                        className={`p-2 rounded-lg transition-all ${
+                          openMenuId === product.id 
+                            ? 'bg-[#1A3A5C] text-white' 
+                            : 'text-[#9AA3B0] hover:text-[#1A3A5C] hover:bg-[#e2e8f0]'
+                        }`}
+                      >
+                        <MoreHorizontal className="w-5 h-5" />
+                      </button>
+
+                      <AnimatePresence>
+                        {openMenuId === product.id && (
+                          <motion.div
+                            ref={menuRef}
+                            initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                            className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-[#e2e8f0] z-[50] py-1 overflow-hidden"
+                          >
+                            <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#4A5568] hover:bg-[#F8F9FB] transition-colors">
+                              <Edit2 className="w-4 h-4 text-[#1A3A5C]" />
+                              <span className="font-medium">Editar Produto</span>
+                            </button>
+                            <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#4A5568] hover:bg-[#F8F9FB] transition-colors">
+                              <Copy className="w-4 h-4 text-[#C8A951]" />
+                              <span className="font-medium">Duplicar</span>
+                            </button>
+                            <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[#4A5568] hover:bg-[#F8F9FB] transition-colors border-t border-[#f1f5f9]">
+                              <EyeOff className="w-4 h-4 text-[#9AA3B0]" />
+                              <span className="font-medium">Desativar</span>
+                            </button>
+                            <button className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                              <Trash2 className="w-4 h-4" />
+                              <span className="font-bold">Excluir</span>
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   </td>
                 </tr>
               ))}
