@@ -330,7 +330,7 @@ export default function EditarProdutoPage() {
                </div>
                
                <ProductImageManager 
-                 productId={productId}
+                 productId={typeof productId === 'string' ? productId : undefined}
                />
              </div>
            )}
