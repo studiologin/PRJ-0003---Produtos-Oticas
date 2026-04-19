@@ -380,7 +380,7 @@ export default function HomePage() {
                       repeat: Infinity, 
                       ease: "easeInOut" 
                     }}
-                    className="relative w-72 md:w-[480px] aspect-[4/3] z-10"
+                    className="relative w-80 md:w-[560px] aspect-[4/3] z-10"
                   >
                     <Image 
                       src="https://jandmwnmaojswfwlrsva.supabase.co/storage/v1/object/public/Imagens%20do%20Site/suamarca-PO.png" 
