@@ -319,7 +319,7 @@ export default function HomePage() {
         </div>
 
         <div className="container mx-auto px-6 md:px-12 relative z-10">
-          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[40px] md:rounded-[60px] p-8 md:py-14 md:px-20 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] overflow-hidden">
+          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[40px] md:rounded-[60px] p-8 md:py-8 md:px-20 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] overflow-hidden">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               
               {/* Left Side: Content */}
