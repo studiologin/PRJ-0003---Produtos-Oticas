@@ -223,9 +223,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
                     ))}
                   </div>
                 </div>
-              )}
-
-              {/* Purchase Actions */}
+              )}              {/* Purchase Actions & Consolidated Info */}
               <div className="space-y-6 pt-4">
                 <div className="flex flex-wrap items-center gap-6">
                   {/* Quantity Stepper */}
@@ -264,125 +262,121 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
                   </button>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-6 py-8 border-y border-[#DDE1E9]">
-                  <div className="flex items-center gap-3">
-                    <Truck className="w-5 h-5 text-[#C8A951]" />
-                    <div className="text-[10px] font-bold text-[#1A3A5C] uppercase tracking-wider">Frete Rápido</div>
+                {/* Benefits List (Reintegrated & Compact) */}
+                <div className="grid grid-cols-3 gap-4 py-6 border-y border-[#DDE1E9]">
+                  <div className="flex items-center gap-2">
+                    <Truck className="w-4 h-4 text-[#C8A951]" />
+                    <span className="text-[9px] font-bold text-[#1A3A5C] uppercase tracking-wider">Frete Rápido</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <ShieldCheck className="w-5 h-5 text-[#C8A951]" />
-                    <div className="text-[10px] font-bold text-[#1A3A5C] uppercase tracking-wider">Compra Segura</div>
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-[#C8A951]" />
+                    <span className="text-[9px] font-bold text-[#1A3A5C] uppercase tracking-wider">Compra Segura</span>
                   </div>
-                  <div className="flex items-center gap-3">
-                    <RotateCcw className="w-5 h-5 text-[#C8A951]" />
-                    <div className="text-[10px] font-bold text-[#1A3A5C] uppercase tracking-wider">Troca Fácil</div>
+                  <div className="flex items-center gap-2">
+                    <RotateCcw className="w-4 h-4 text-[#C8A951]" />
+                    <span className="text-[9px] font-bold text-[#1A3A5C] uppercase tracking-wider">Troca Fácil</span>
+                  </div>
+                </div>
+
+                {/* Shipping Calculator (Compacted) */}
+                <div className="pt-2 space-y-4">
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[9px] font-bold text-[#1A3A5C]/40 uppercase tracking-[0.2em]">Calcular Frete e Prazo</label>
+                    <div className="flex gap-2">
+                      <div className="relative flex-1">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#1A3A5C]/30" />
+                        <input 
+                          type="text" 
+                          placeholder="00000-000"
+                          value={cep}
+                          onChange={(e) => setCep(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                          className="w-full h-10 bg-white rounded-l-full border border-[#DDE1E9] border-r-0 pl-10 pr-4 text-xs font-bold text-[#1A3A5C] focus:border-[#C8A951] focus:ring-1 focus:ring-[#C8A951] outline-none transition-all"
+                        />
+                      </div>
+                      <button 
+                        onClick={handleCalculateShipping}
+                        disabled={isCalculating || cep.length < 8}
+                        className="h-10 px-6 bg-[#1A3A5C] text-white rounded-r-full font-bold text-[9px] uppercase tracking-widest hover:bg-[#C8A951] transition-all disabled:opacity-50 disabled:cursor-not-allowed -ml-px"
+                      >
+                        {isCalculating ? '...' : 'Calcular'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {shippingError && (
+                    <p className="text-red-500 text-[9px] font-bold uppercase tracking-wider">{shippingError}</p>
+                  )}
+
+                  {shippingOptions.length > 0 && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="space-y-2 pt-1"
+                    >
+                      {shippingOptions.map((option) => (
+                        <div key={option.id} className="flex items-center justify-between p-3 bg-white rounded-xl border border-[#DDE1E9] group hover:border-[#C8A951] transition-all">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 relative bg-white rounded-lg border border-[#DDE1E9] p-1">
+                              <Image src={option.company_logo} alt={option.company} fill className="object-contain p-1" />
+                            </div>
+                            <div>
+                              <p className="text-[10px] font-bold text-[#1A3A5C] line-clamp-1">{option.name}</p>
+                              <p className="text-[8px] text-[#1A3A5C]/40 font-bold uppercase tracking-wider">Em {option.delivery_time} dias</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-xs font-bold text-[#1A3A5C]">R$ {option.price.toFixed(2).replace('.', ',')}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
+                </div>
+
+                {/* Tabs (Description / Specs) (Compacted) */}
+                <div className="pt-6 space-y-6">
+                  <div className="flex gap-8 border-b border-[#DDE1E9]">
+                    <button 
+                      onClick={() => setActiveTab('descricao')}
+                      className={`pb-3 text-[10px] font-bold uppercase tracking-[0.2em] transition-all relative ${activeTab === 'descricao' ? 'text-[#1A3A5C]' : 'text-[#1A3A5C]/40 hover:text-[#1A3A5C]'}`}
+                    >
+                      Descrição
+                      {activeTab === 'descricao' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C8A951]" />}
+                    </button>
+                    <button 
+                      onClick={() => setActiveTab('especificacoes')}
+                      className={`pb-3 text-[10px] font-bold uppercase tracking-[0.2em] transition-all relative ${activeTab === 'especificacoes' ? 'text-[#1A3A5C]' : 'text-[#1A3A5C]/40 hover:text-[#1A3A5C]'}`}
+                    >
+                      Especificações
+                      {activeTab === 'especificacoes' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C8A951]" />}
+                    </button>
+                  </div>
+
+                  <div className="min-h-[100px]">
+                    {activeTab === 'descricao' ? (
+                      <div className="space-y-3">
+                        <h3 className="text-sm font-bold text-[#1A3A5C]">Conheça o Produto</h3>
+                        <div className="text-[#1A3A5C]/70 leading-relaxed text-sm whitespace-pre-line">
+                          {product.description}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <h3 className="text-sm font-bold text-[#1A3A5C]">Detalhes Técnicos</h3>
+                        <div className="grid grid-cols-1 gap-y-2">
+                          {product.specifications.map((spec, i) => (
+                            <div key={i} className="flex justify-between items-center py-2 border-b border-[#DDE1E9]/30">
+                              <span className="text-[8px] font-bold uppercase tracking-wider text-[#1A3A5C]/40">{spec.label}</span>
+                              <span className="text-[#1A3A5C] text-xs font-semibold">{spec.value}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
             </motion.div>
-          </div>
-        </div>
-
-        {/* Second Row: Tabs + Shipping */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start mt-16 pt-16 border-t border-[#DDE1E9]">
-          {/* Tabs (Description / Specs) - Second on Mobile, First on Desktop */}
-          <div className="space-y-8 order-2 lg:order-1">
-            <div className="flex gap-12 border-b border-[#DDE1E9] mb-12">
-              <button 
-                onClick={() => setActiveTab('descricao')}
-                className={`pb-4 text-[11px] font-bold uppercase tracking-[0.2em] transition-all relative ${activeTab === 'descricao' ? 'text-[#1A3A5C]' : 'text-[#1A3A5C]/40 hover:text-[#1A3A5C]'}`}
-              >
-                Descrição
-                {activeTab === 'descricao' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C8A951]" />}
-              </button>
-              <button 
-                onClick={() => setActiveTab('especificacoes')}
-                className={`pb-4 text-[11px] font-bold uppercase tracking-[0.2em] transition-all relative ${activeTab === 'especificacoes' ? 'text-[#1A3A5C]' : 'text-[#1A3A5C]/40 hover:text-[#1A3A5C]'}`}
-              >
-                Especificações
-                {activeTab === 'especificacoes' && <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#C8A951]" />}
-              </button>
-            </div>
-
-            <div className="min-h-[200px]">
-              {activeTab === 'descricao' ? (
-                <div className="space-y-4">
-                  <h3 className="text-xl font-bold text-[#1A3A5C]">Conheça o Produto</h3>
-                  <div className="text-[#1A3A5C]/70 leading-relaxed text-base whitespace-pre-line">
-                    {product.description}
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  <h3 className="text-xl font-bold text-[#1A3A5C]">Detalhes Técnicos</h3>
-                  <div className="grid grid-cols-1 gap-y-3">
-                    {product.specifications.map((spec, i) => (
-                      <div key={i} className="flex justify-between items-center py-3 border-b border-[#DDE1E9]/50">
-                        <span className="text-[9px] font-bold uppercase tracking-wider text-[#1A3A5C]/40">{spec.label}</span>
-                        <span className="text-[#1A3A5C] text-sm font-semibold">{spec.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Shipping Calculator - First on Mobile, Second on Desktop */}
-          <div className="space-y-6 order-1 lg:order-2">
-            <div className="pt-2 space-y-4">
-              <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-bold text-[#1A3A5C]/40 uppercase tracking-[0.2em] mb-1">Calcular Frete e Prazo</label>
-                <div className="flex gap-3">
-                  <div className="relative flex-1">
-                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1A3A5C]/30" />
-                    <input 
-                      type="text" 
-                      placeholder="00000-000"
-                      value={cep}
-                      onChange={(e) => setCep(e.target.value.replace(/\D/g, '').slice(0, 8))}
-                      className="w-full h-12 bg-white rounded-l-full border border-[#DDE1E9] border-r-0 pl-11 pr-4 text-sm font-bold text-[#1A3A5C] focus:border-[#C8A951] focus:ring-1 focus:ring-[#C8A951] outline-none transition-all"
-                    />
-                  </div>
-                  <button 
-                    onClick={handleCalculateShipping}
-                    disabled={isCalculating || cep.length < 8}
-                    className="h-12 px-8 bg-[#1A3A5C] text-white rounded-r-full font-bold text-[10px] uppercase tracking-widest hover:bg-[#C8A951] transition-all disabled:opacity-50 disabled:cursor-not-allowed -ml-px"
-                  >
-                    {isCalculating ? 'Calculando...' : 'Calcular'}
-                  </button>
-                </div>
-              </div>
-
-              {shippingError && (
-                <p className="text-red-500 text-[10px] font-bold uppercase tracking-wider">{shippingError}</p>
-              )}
-
-              {shippingOptions.length > 0 && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="space-y-2 pt-2"
-                >
-                  {shippingOptions.map((option) => (
-                    <div key={option.id} className="flex items-center justify-between p-4 bg-white rounded-xl border border-[#DDE1E9] group hover:border-[#C8A951] transition-all">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 relative bg-white rounded-lg border border-[#DDE1E9] p-2">
-                          <Image src={option.company_logo} alt={option.company} fill className="object-contain p-1" />
-                        </div>
-                        <div>
-                          <p className="text-[11px] font-bold text-[#1A3A5C]">{option.name}</p>
-                          <p className="text-[9px] text-[#1A3A5C]/40 font-bold uppercase tracking-wider">Chega em {option.delivery_time} dias úteis</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm font-bold text-[#1A3A5C]">R$ {option.price.toFixed(2).replace('.', ',')}</p>
-                      </div>
-                    </div>
-                  ))}
-                </motion.div>
-              )}
-            </div>
           </div>
         </div>
       </section>
