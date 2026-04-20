@@ -125,7 +125,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
                 src={product.images?.[activeImageIndex] || product.image} 
                 alt={product.name} 
                 fill 
-                className="object-contain p-12 group-hover:scale-110 transition-transform duration-700"
+                className="object-cover group-hover:scale-110 transition-transform duration-700"
                 priority
                 referrerPolicy="no-referrer"
               />
@@ -148,7 +148,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
                     src={img} 
                     alt={`${product.name} thumbnail ${i + 1}`}
                     fill 
-                    className={`object-contain p-2 ${activeImageIndex === i ? 'opacity-100' : 'opacity-60'}`}
+                    className={`object-cover ${activeImageIndex === i ? 'opacity-100' : 'opacity-60'}`}
                   />
                 </button>
               ))}
@@ -399,8 +399,8 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
                   key={p.id}
                   className="min-w-[280px] lg:min-w-0 snap-center bg-white rounded-[32px] p-6 shadow-sm hover:shadow-xl transition-all duration-500 group border border-white"
                 >
-                  <div className="aspect-square relative mb-6 group-hover:scale-105 transition-transform duration-500">
-                    <Image src={p.image} alt={p.name} fill className="object-contain p-4" />
+                  <div className="aspect-square relative mb-6 group-hover:scale-105 transition-transform duration-500 overflow-hidden rounded-2xl">
+                    <Image src={p.image} alt={p.name} fill className="object-cover" />
                   </div>
                   <div>
                     <span className="text-[#1A3A5C]/60 font-bold text-[9px] uppercase tracking-widest mb-2 block">{p.category}</span>

@@ -197,7 +197,7 @@ export default function ProdutosPage() {
                       src={product.image} 
                       alt={product.name} 
                       fill 
-                      className="object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500 p-6"
+                      className="object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
                       referrerPolicy="no-referrer"
                     />
                   </div>

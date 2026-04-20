@@ -522,7 +522,7 @@ export default function HomePage() {
                           src={product.image} 
                           alt={product.name} 
                           fill 
-                          className="object-contain drop-shadow-[0_20px_30px_rgba(0,0,0,0.3)]"
+                          className="object-cover drop-shadow-[0_20px_30px_rgba(0,0,0,0.3)]"
                           referrerPolicy="no-referrer"
                         />
                       </div>
