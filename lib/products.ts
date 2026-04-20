@@ -21,6 +21,9 @@ export interface Product {
     value: string;
   }[];
   stock_quantity?: number;
+  min_stock?: number;
+  is_active?: boolean;
+  promo_price?: number;
   images?: string[];
 }
 
