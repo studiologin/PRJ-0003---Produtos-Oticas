@@ -162,6 +162,52 @@ export async function getCategories(): Promise<Category[]> {
   }
 }
 
+export async function getRelatedProducts(productId: number, categoryName: string): Promise<Product[]> {
+  try {
+    // 1. Tentar buscar relacionados manuais
+    const { data: manualData, error: manualError } = await supabase
+      .from('product_related')
+      .select(`
+        related:products!product_related_related_id_fkey(
+          *,
+          categories(name)
+        )
+      `)
+      .eq('product_id', productId)
+      .order('position', { ascending: true })
+      .limit(4);
+
+    let relateds: Product[] = [];
+    if (manualData && !manualError) {
+      relateds = manualData.map((item: any) => mapProduct(item.related));
+    }
+
+    // 2. Se tiver menos de 4, complementar com produtos da mesma categoria
+    if (relateds.length < 4) {
+      const remainingCount = 4 - relateds.length;
+      const excludeIds = [productId, ...relateds.map(p => p.id)];
+      
+      const { data: categoryData, error: categoryError } = await supabase
+        .from('products')
+        .select('*, categories(name)')
+        .eq('is_active', true)
+        .eq('categories.name', categoryName)
+        .not('id', 'in', `(${excludeIds.join(',')})`)
+        .limit(remainingCount);
+
+      if (categoryData && !categoryError) {
+        const categoryRelateds = categoryData.map(mapProduct);
+        relateds = [...relateds, ...categoryRelateds];
+      }
+    }
+
+    return relateds;
+  } catch (err) {
+    console.error('Error fetching related products:', err);
+    return [];
+  }
+}
+
 // Global products fallback (for backward compatibility if needed, but async is better)
 export const products = mockProducts;
 

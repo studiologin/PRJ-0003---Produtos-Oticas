@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { motion } from 'motion/react';
 import { Mail, Phone, MapPin, Send, MessageSquare, Clock } from 'lucide-react';
 
@@ -186,9 +187,13 @@ export default function ContatoPage() {
                 Precisa de uma resposta rápida? Fale diretamente com um de nossos consultores especializados agora mesmo. Estamos prontos para ajudar sua ótica a crescer.
               </p>
             </div>
-            <button className="whitespace-nowrap bg-[#C8A951] text-[#1A3A5C] px-10 py-5 rounded-2xl font-bold text-lg hover:bg-[#D4B860] transition-all hover:scale-105 shadow-xl active:scale-95">
+            <Link 
+              href="https://wa.me/5511988470858?text=Olá,%20preciso%20de%20suporte%20técnico%20ou%20informações%20sobre%20parceria." 
+              target="_blank"
+              className="whitespace-nowrap bg-[#C8A951] text-[#1A3A5C] px-10 py-5 rounded-2xl font-bold text-lg hover:bg-[#D4B860] transition-all hover:scale-105 shadow-xl active:scale-95 flex items-center justify-center"
+            >
               Iniciar Conversa Agora
-            </button>
+            </Link>
           </div>
         </motion.div>
       </div>

@@ -218,8 +218,8 @@ export default function ProdutosPage() {
                   </div>
                   <div className="flex flex-col h-[calc(100%-216px)]">
                     <span className="text-[#1A3A5C]/60 text-[10px] font-bold uppercase tracking-widest mb-1">{product.category}</span>
-                    <h3 className="text-[#1A3A5C] text-base font-bold mb-1 truncate leading-tight">{product.name}</h3>
-                    <p className="text-[#1A3A5C]/40 text-xs mb-3">Ref: {product.ref}</p>
+                    <h3 className="text-[#1A3A5C] text-base font-bold mb-1 truncate leading-tight group-hover:text-[#C8A951] transition-colors">{product.name}</h3>
+                    <p className="text-[#1A3A5C]/50 text-xs mb-3 line-clamp-2 h-8">{product.shortDescription}</p>
                     <div className="flex items-center justify-between mt-auto pt-2">
                       <div className="text-[#1A3A5C] font-black text-xl">R$ {product.price.toFixed(2).replace('.', ',')}</div>
                       <button 

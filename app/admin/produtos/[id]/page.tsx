@@ -6,6 +6,9 @@ import { useRouter, useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import ProductImageManager from '../components/ProductImageManager';
+import ProductRelatedManager from '../components/ProductRelatedManager';
+import { formatCurrency, parseCurrencyToNumber } from '@/lib/utils';
+import StatusModal from '../../components/StatusModal';
 
 export default function EditarProdutoPage() {
   const router = useRouter();
@@ -16,6 +19,17 @@ export default function EditarProdutoPage() {
   const [categories, setCategories] = useState<any[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [statusModal, setStatusModal] = useState<{
+    isOpen: boolean;
+    type: 'success' | 'error' | 'warning';
+    title: string;
+    message: string;
+  }>({
+    isOpen: false,
+    type: 'success',
+    title: '',
+    message: ''
+  });
   const [isLoadingProduct, setIsLoadingProduct] = useState(true);
 
   const [formData, setFormData] = useState({
@@ -71,8 +85,8 @@ export default function EditarProdutoPage() {
       if (data) {
         setFormData({
           ...data,
-          price: data.price.toString(),
-          promo_price: data.promo_price ? data.promo_price.toString() : '',
+          price: data.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 }),
+          promo_price: data.promo_price ? data.promo_price.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '',
         });
       }
     } catch (err) {
@@ -88,6 +102,17 @@ export default function EditarProdutoPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
+    
+    if (name === 'price' || name === 'promo_price') {
+      const digitsOnly = value.replace(/\D/g, '');
+      const formatted = (Number(digitsOnly) / 100).toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      setFormData(prev => ({ ...prev, [name]: formatted }));
+      return;
+    }
+
     setFormData(prev => ({
       ...prev,
       [name]: type === 'number' ? Number(value) : value
@@ -100,15 +125,20 @@ export default function EditarProdutoPage() {
       
       // Validação básica
       if (!formData.name || !formData.ref || !formData.category_id || !formData.price) {
-        alert('Por favor, preencha todos os campos obrigatórios (*)');
+        setStatusModal({
+          isOpen: true,
+          type: 'warning',
+          title: 'Campos Obrigatórios',
+          message: 'Por favor, preencha todos os campos marcados com asterisco (*).'
+        });
         setIsSaving(false);
         return;
       }
 
       const productToSave = {
         ...formData,
-        price: parseFloat(formData.price.toString().replace(',', '.')),
-        promo_price: formData.promo_price ? parseFloat(formData.promo_price.toString().replace(',', '.')) : null,
+        price: parseCurrencyToNumber(formData.price),
+        promo_price: formData.promo_price ? parseCurrencyToNumber(formData.promo_price) : null,
       };
 
       const { error } = await supabase
@@ -118,11 +148,25 @@ export default function EditarProdutoPage() {
 
       if (error) throw error;
 
-      alert('Produto atualizado com sucesso!');
-      router.push('/admin/produtos');
+      setStatusModal({
+        isOpen: true,
+        type: 'success',
+        title: 'Atualizado!',
+        message: 'O produto foi atualizado com sucesso no sistema.'
+      });
+      
+      // Esperar o usuário ver ou o toast fechar para redirecionar
+      setTimeout(() => {
+        router.push('/admin/produtos');
+      }, 2000);
     } catch (err) {
       console.error('Erro ao atualizar produto:', err);
-      alert('Erro ao atualizar produto.');
+      setStatusModal({
+        isOpen: true,
+        type: 'error',
+        title: 'Erro na Operação',
+        message: 'Não foi possível salvar as alterações. Verifique sua conexão e tente novamente.'
+      });
     } finally {
       setIsSaving(false);
     }
@@ -190,6 +234,7 @@ export default function EditarProdutoPage() {
               { id: 'imagens', label: 'Imagens' },
               { id: 'estoque', label: 'Estoque' },
               { id: 'b2b', label: 'Vendas' },
+              { id: 'relacionados', label: 'Relacionados' },
               { id: 'seo', label: 'SEO' },
             ].map(tab => (
                <button 
@@ -417,8 +462,27 @@ export default function EditarProdutoPage() {
              </div>
            )}
 
+           {activeTab === 'relacionados' && (
+             <div className="space-y-8 animate-in fade-in">
+               <div className="flex items-center justify-between border-b border-[#e2e8f0] pb-4">
+                 <h2 className="text-lg font-bold text-[#1A3A5C]">Produtos Relacionados</h2>
+               </div>
+               
+               <ProductRelatedManager 
+                 productId={productId as string}
+               />
+             </div>
+           )}
+
         </div>
       </div>
+      <StatusModal 
+        isOpen={statusModal.isOpen}
+        onClose={() => setStatusModal(prev => ({ ...prev, isOpen: false }))}
+        type={statusModal.type}
+        title={statusModal.title}
+        message={statusModal.message}
+      />
     </div>
   );
 }

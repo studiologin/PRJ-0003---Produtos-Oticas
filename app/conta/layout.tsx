@@ -95,7 +95,7 @@ export default function ContaLayout({ children }: { children: React.ReactNode })
         </Link>
         
         {!isSidebarCollapsed && (
-          <div className="mb-8 px-2">
+          <Link href="/" className="mb-8 px-2 block hover:opacity-80 transition-opacity">
             <Image 
               src="https://dcdn-us.mitiendanube.com/stores/006/909/950/themes/common/logo-131855825-1762198181-7154c71cb7dfed7f98631202f8a8e5b41762198181-640-0.webp" 
               alt="Produtos Óticas" 
@@ -104,10 +104,10 @@ export default function ContaLayout({ children }: { children: React.ReactNode })
               className="mb-2 object-contain brightness-0 invert"
               referrerPolicy="no-referrer"
             />
-          </div>
+          </Link>
         )}
         {isSidebarCollapsed && (
-          <div className="mb-6">
+          <Link href="/" className="mb-6 block hover:opacity-80 transition-opacity">
             <Image 
               src="https://dcdn-us.mitiendanube.com/stores/006/909/950/themes/common/logo-131855825-1762198181-7154c71cb7dfed7f98631202f8a8e5b41762198181-640-0.webp" 
               alt="Produtos Óticas" 
@@ -116,7 +116,7 @@ export default function ContaLayout({ children }: { children: React.ReactNode })
               className="object-contain brightness-0 invert"
               referrerPolicy="no-referrer"
             />
-          </div>
+          </Link>
         )}
       </div>
 

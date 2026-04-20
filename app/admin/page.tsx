@@ -2,6 +2,7 @@
 
 import { Package, ShoppingBag, Users, AlertTriangle, ArrowUpRight, ArrowDownRight, Truck } from 'lucide-react';
 import Link from 'next/link';
+import { formatCurrency } from '@/lib/utils';
 
 export default function AdminDashboardPage() {
   const kpis = [
@@ -94,8 +95,8 @@ export default function AdminDashboardPage() {
                 {[40, 25, 60, 45, 80, 55, 90, 70, 100, 85, 60, 40].map((h, i) => (
                   <div key={i} className="w-full bg-[#1A3A5C]/5 hover:bg-[#1A3A5C]/10 rounded-t-sm flex items-end relative group transition-colors">
                      <div style={{ height: `${h}%` }} className="w-full bg-[#1A3A5C] rounded-t-sm group-hover:bg-[#C8A951] transition-colors relative">
-                        <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#1A3A5C] text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity">
-                          R$ {h * 100}
+                        <span className="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#1A3A5C] text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                          {formatCurrency(h * 100)}
                         </span>
                      </div>
                   </div>

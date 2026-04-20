@@ -19,6 +19,7 @@ import {
   ExternalLink,
   Eye
 } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -196,6 +197,7 @@ export default function AdminProdutosPage() {
                     <ArrowUpDown className="w-3 h-3 text-[#9AA3B0] group-hover:text-[#1A3A5C] transition-colors" />
                   </div>
                 </th>
+                <th className="px-6 py-4 text-xs font-bold text-[#4A5568] tracking-wider uppercase">Estoque</th>
                 <th className="px-6 py-4 text-xs font-bold text-[#4A5568] tracking-wider uppercase text-center">Status</th>
                 <th className="px-6 py-4"></th>
               </tr>
@@ -244,8 +246,18 @@ export default function AdminProdutosPage() {
                     </td>
                     <td className="px-6 py-4">
                       <span className="text-sm font-bold text-[#1A3A5C]">
-                        R$ {product.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        {formatCurrency(product.price)}
                       </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col">
+                        <span className={`text-sm font-bold ${product.stock_quantity <= (product.min_stock || 5) ? 'text-rose-500' : 'text-[#4A5568]'}`}>
+                          {product.stock_quantity} un
+                        </span>
+                        {product.stock_quantity <= (product.min_stock || 5) && (
+                          <span className="text-[10px] text-rose-500 font-bold uppercase tracking-wider">Estoque Baixo</span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-center">
                       {product.is_active ? (

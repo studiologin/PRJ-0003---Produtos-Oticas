@@ -15,6 +15,7 @@ import {
   Check
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import StatusModal from '../components/StatusModal';
 
 interface Category {
   id: string;
@@ -31,6 +32,17 @@ export default function CategoriasPage() {
   const [newCategoryName, setNewCategoryName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [statusModal, setStatusModal] = useState<{
+    isOpen: boolean;
+    type: 'success' | 'error' | 'warning';
+    title: string;
+    message: string;
+  }>({
+    isOpen: false,
+    type: 'success',
+    title: '',
+    message: ''
+  });
 
   useEffect(() => {
     fetchCategories();
@@ -106,7 +118,12 @@ export default function CategoriasPage() {
 
       if (error) {
         if (error.code === '23503') {
-          alert('Não é possível excluir esta categoria pois existem produtos vinculados a ela.');
+          setStatusModal({
+            isOpen: true,
+            type: 'warning',
+            title: 'Exclusão Negada',
+            message: 'Não é possível excluir esta categoria pois existem produtos vinculados a ela. Remova os produtos ou altere suas categorias primeiro.'
+          });
           return;
         }
         throw error;
@@ -115,7 +132,12 @@ export default function CategoriasPage() {
       setCategories(prev => prev.filter(c => c.id !== id));
     } catch (err: any) {
       console.error('Erro ao excluir categoria:', err);
-      alert('Ocorreu um erro ao excluir a categoria.');
+      setStatusModal({
+        isOpen: true,
+        type: 'error',
+        title: 'Algo deu errado',
+        message: 'Ocorreu um erro ao tentar excluir a categoria. Tente novamente em instantes.'
+      });
     }
   };
 
@@ -310,6 +332,13 @@ export default function CategoriasPage() {
           </div>
         )}
       </AnimatePresence>
+      <StatusModal 
+        isOpen={statusModal.isOpen}
+        onClose={() => setStatusModal(prev => ({ ...prev, isOpen: false }))}
+        type={statusModal.type}
+        title={statusModal.title}
+        message={statusModal.message}
+      />
     </div>
   );
 }

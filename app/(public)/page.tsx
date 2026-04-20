@@ -29,10 +29,14 @@ export default function HomePage() {
   }, []);
 
   const [scrollX, setScrollX] = useState(0);
-  const maxScroll = -1200; // This should ideally be calculated based on content width
+  const cardWidth = 350;
+  const gap = 24;
+  const step = cardWidth + gap;
+  const maxScroll = featuredProducts.length > 0 
+    ? -((featuredProducts.length * step) - (typeof window !== 'undefined' ? Math.min(window.innerWidth, 1280) : 1200) + gap)
+    : -1200;
 
   const handleScroll = (direction: 'left' | 'right') => {
-    const step = 344; // card width (320) + gap (24)
     let newX = direction === 'left' ? scrollX + step : scrollX - step;
     
     // Bounds checking
@@ -148,8 +152,8 @@ export default function HomePage() {
                 className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl z-10"
               >
                 <Image 
-                  src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1000&auto=format&fit=crop" 
-                  alt="Laboratório e Interior Produtos Óticas" 
+                  src="https://jandmwnmaojswfwlrsva.supabase.co/storage/v1/object/public/Imagens%20do%20Site/capasobrehome.png" 
+                  alt="A Marca que entende a sua Ótica - Produtos Óticas" 
                   fill 
                   className="object-cover"
                   referrerPolicy="no-referrer"
@@ -241,8 +245,8 @@ export default function HomePage() {
                 </span>
               </div>
               <Image 
-                src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=1200&auto=format&fit=crop" 
-                alt="Óculos de Sol Premium" 
+                src="https://jandmwnmaojswfwlrsva.supabase.co/storage/v1/object/public/Imagens%20do%20Site/CaseCouro.png" 
+                alt="Case de Couro Premium - Produtos Óticas" 
                 fill 
                 className="object-cover group-hover:scale-105 transition-transform duration-[2s] ease-out"
                 referrerPolicy="no-referrer"
@@ -255,22 +259,22 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
             {[
               {
-                title: "Lentes de Contato",
-                desc: "Conforto e liberdade para o seu dia.",
-                img: "https://images.unsplash.com/photo-1582142306909-195724d33ffc?q=80&w=600&auto=format&fit=crop",
-                slug: "lentes"
+                title: "Porta Serviços com Zipper",
+                desc: "Organização e proteção para seus serviços.",
+                img: "https://jandmwnmaojswfwlrsva.supabase.co/storage/v1/object/public/Imagens%20do%20Site/PortaServico.png",
+                slug: "porta-servico"
               },
               {
-                title: "Linha Infantil",
-                desc: "Resistência e cores para os pequenos.",
-                img: "https://images.unsplash.com/photo-1502444330042-d1a1ddf9bb5b?q=80&w=600&auto=format&fit=crop",
-                slug: "infantil"
+                title: "Porta Receita",
+                desc: "Mantenha suas receitas seguras e organizadas.",
+                img: "https://jandmwnmaojswfwlrsva.supabase.co/storage/v1/object/public/Imagens%20do%20Site/PortaReceita.png",
+                slug: "porta-receita"
               },
               {
-                title: "Acessórios",
-                desc: "Cuidados essenciais para seus óculos.",
-                img: "https://images.unsplash.com/photo-1574258495973-f010dfbb5371?q=80&w=600&auto=format&fit=crop",
-                slug: "acessorios"
+                title: "Saquinho Porta - Óculos",
+                desc: "Proteção prática e leve para todos os momentos.",
+                img: "https://jandmwnmaojswfwlrsva.supabase.co/storage/v1/object/public/Imagens%20do%20Site/CaseSaco.png",
+                slug: "saquinho"
               }
             ].map((item, idx) => (
               <motion.div
@@ -482,59 +486,51 @@ export default function HomePage() {
               {featuredProducts.map((product) => (
                 <motion.div 
                   key={product.id} 
-                  whileHover={{ scale: 1.05, y: -10 }}
-                  className="min-w-[280px] md:min-w-[320px] rounded-[32px] group transition-all duration-500 bg-[#1A3A5C] shadow-xl relative flex flex-col items-center text-center border border-white/5 overflow-hidden"
+                  whileHover={{ scale: 1.02, y: -5 }}
+                  className="w-[350px] min-w-[350px] rounded-[24px] group transition-all duration-500 bg-[#1A3A5C] shadow-2xl relative flex flex-col border border-white/5 overflow-hidden"
                 >
-                  <div className="w-full h-full p-8 relative">
+                  <div className="w-full p-6 relative flex flex-col h-full">
                     <button
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         toggleFavorite(product);
                       }}
-                      className={`absolute top-4 right-4 z-20 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 backdrop-blur-md border border-white/10
+                      className={`absolute top-4 right-4 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 backdrop-blur-md border border-white/10
                         ${isFavorite(product.id) ? 'bg-white/20 text-[#C0392B]' : 'bg-white/5 text-white/50 hover:bg-white/20 hover:text-white'}
                       `}
                       title={isFavorite(product.id) ? "Remover dos Favoritos" : "Adicionar aos Favoritos"}
                     >
-                      <Heart className={`w-4 h-4 ${isFavorite(product.id) ? 'fill-current' : ''}`} />
+                      <Heart className={`w-3.5 h-3.5 ${isFavorite(product.id) ? 'fill-current' : ''}`} />
                     </button>
 
-                    <Link href={`/produto/${product.slug}`} className="block w-full h-full relative z-10">
-                      {/* Badge */}
-                      <div className="absolute -top-2 -left-2 z-10">
-                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${
-                          product.bestseller ? 'bg-white text-[#1A3A5C] shadow-lg' : 'bg-white/10 text-white backdrop-blur-md'
-                        }`}>
-                          {product.bestseller ? 'Bestseller' : product.new ? 'Novo' : 'Oferta'}
-                        </span>
-                      </div>
-
-                      {/* Product Info Top */}
-                      <div className="mb-8 mt-4">
-                        <span className="text-white/40 text-[10px] font-bold uppercase tracking-[0.2em] mb-2 block">Ref: {product.ref}</span>
-                        <h3 className="text-white text-xl font-bold tracking-tight group-hover:text-white/70 transition-colors">{product.name}</h3>
-                      </div>
-
-                      {/* Product Image */}
-                      <div className="w-full aspect-square relative mb-8 group-hover:scale-110 transition-transform duration-700 ease-out">
+                    <Link href={`/produto/${product.slug}`} className="flex flex-col h-full">
+                      {/* Product Image - Square to gain width without height */}
+                      <div className="w-full aspect-square relative mb-5 rounded-2xl overflow-hidden bg-white/5">
                         <Image 
                           src={product.image} 
                           alt={product.name} 
                           fill 
-                          className="object-cover drop-shadow-[0_20px_30px_rgba(0,0,0,0.3)]"
+                          className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                           referrerPolicy="no-referrer"
                         />
                       </div>
 
-                      {/* CTA Button "Styled" */}
-                      <div className="w-full bg-white text-[#1A3A5C] py-4 rounded-full font-bold text-sm group-hover:bg-[#1A3A5C] group-hover:text-white transition-all shadow-lg mb-4">
-                        Ver Detalhes &rarr;
+                      {/* Product Info - Readable hierarchy */}
+                      <div className="mb-6 flex-1">
+                        <h3 className="text-white text-base font-bold tracking-tight group-hover:text-[#C8A951] transition-colors leading-tight line-clamp-2 h-10">{product.name}</h3>
+                        <p className="text-white/40 text-[11px] leading-relaxed line-clamp-2 h-8">{product.shortDescription}</p>
                       </div>
 
-                      {/* Price */}
-                      <div className="text-white/60 text-xs font-medium">
-                        A partir de <span className="text-white font-bold ml-1">R$ {product.price.toFixed(2).replace('.', ',')}</span>
+                      {/* CTA & Price - Premium balanced stack */}
+                      <div className="space-y-4 pt-4 border-t border-white/5">
+                        <div className="w-full bg-white/5 text-white border border-white/10 py-3 rounded-xl text-xs font-bold group-hover:bg-[#C8A951] group-hover:text-[#1A3A5C] group-hover:border-[#C8A951] transition-all text-center shadow-lg">
+                          Ver Detalhes
+                        </div>
+
+                        <div className="text-white/50 text-[11px] font-medium text-center">
+                          A partir de <span className="text-white font-bold ml-1">R$ {product.price.toFixed(2).replace('.', ',')}</span>
+                        </div>
                       </div>
                     </Link>
                   </div>
@@ -542,23 +538,23 @@ export default function HomePage() {
               ))}
             </motion.div>
             
-            {/* Scroll Hint */}
-            <div className="mt-10 flex items-center justify-center gap-6">
+            {/* Scroll Hint & Navigation Controls */}
+            <div className="mt-10 flex items-center justify-center gap-8">
+              <ChevronLeft 
+                onClick={() => handleScroll('left')}
+                className="w-5 h-5 text-[#1A3A5C] hover:text-[#C8A951] cursor-pointer transition-colors active:scale-90" 
+              />
+              
               <div className="flex items-center gap-2">
-                <div className={`h-1 rounded-full transition-all duration-300 ${scrollX >= -100 ? 'w-12 bg-[#1A3A5C]' : 'w-2 bg-[#1A3A5C]/20'}`}></div>
-                <div className={`h-1 rounded-full transition-all duration-300 ${scrollX < -100 && scrollX > -800 ? 'w-12 bg-[#1A3A5C]' : 'w-2 bg-[#1A3A5C]/20'}`}></div>
-                <div className={`h-1 rounded-full transition-all duration-300 ${scrollX <= -800 ? 'w-12 bg-[#1A3A5C]' : 'w-2 bg-[#1A3A5C]/20'}`}></div>
+                <div className={`h-[3px] rounded-full transition-all duration-500 ${scrollX >= -100 ? 'w-10 bg-[#1A3A5C]' : 'w-2 bg-[#1A3A5C]/20'}`}></div>
+                <div className={`h-[3px] rounded-full transition-all duration-500 ${scrollX < -100 && scrollX > -800 ? 'w-10 bg-[#1A3A5C]' : 'w-2 bg-[#1A3A5C]/20'}`}></div>
+                <div className={`h-[3px] rounded-full transition-all duration-500 ${scrollX <= -800 ? 'w-10 bg-[#1A3A5C]' : 'w-2 bg-[#1A3A5C]/20'}`}></div>
               </div>
-              <div className="flex items-center gap-3 text-[#1A3A5C]">
-                <ChevronLeft 
-                  onClick={() => handleScroll('left')}
-                  className="w-5 h-5 hover:text-[#1A3A5C]/60 cursor-pointer transition-colors" 
-                />
-                <ChevronRight 
-                  onClick={() => handleScroll('right')}
-                  className="w-5 h-5 hover:text-[#1A3A5C]/60 cursor-pointer transition-colors" 
-                />
-              </div>
+
+              <ChevronRight 
+                onClick={() => handleScroll('right')}
+                className="w-5 h-5 text-[#1A3A5C] hover:text-[#C8A951] cursor-pointer transition-colors active:scale-90" 
+              />
             </div>
           </div>
         </div>
@@ -574,7 +570,11 @@ export default function HomePage() {
             <p className="text-white/80 text-lg mb-10 leading-relaxed">
               Cadastre-se como parceiro B2B e tenha acesso a tabelas de preços exclusivas, faturamento facilitado e atendimento dedicado.
             </p>
-            <Link href="/contato" className="inline-flex bg-[#C8A951] text-[#1A3A5C] hover:bg-[#C8A951]/90 px-8 py-3.5 rounded-md font-bold text-sm transition-colors shadow-sm">
+            <Link 
+              href="https://wa.me/5511988470858?text=Olá,%20gostaria%20de%20saber%20mais%20sobre%20a%20parceria%20B2B." 
+              target="_blank"
+              className="inline-flex bg-[#C8A951] text-[#1A3A5C] hover:bg-[#C8A951]/90 px-8 py-3.5 rounded-md font-bold text-sm transition-colors shadow-sm"
+            >
               Quero ser Parceiro
             </Link>
          </div>

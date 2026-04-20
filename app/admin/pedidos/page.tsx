@@ -13,6 +13,7 @@ import {
   Truck, 
   AlertCircle 
 } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
 
 const orders = [
   { id: '1084', date: '17/04/2026', customer: 'Óptica Visão Real', type: 'PJ', total: 1250.80, status: 'approved', payment: 'Pix' },
@@ -138,7 +139,7 @@ export default function AdminPedidosPage() {
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-sm font-bold text-[#1A3A5C]">
-                      R$ {order.total.toFixed(2).replace('.', ',')}
+                      {formatCurrency(order.total)}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-right">

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ChevronRight, ShieldCheck, Truck, RotateCcw, Package, Minus, Plus, ShoppingCart, Star, MapPin, Heart } from 'lucide-react';
 import { motion } from 'motion/react';
-import { getProductBySlug, getProducts, type Product } from '@/lib/products';
+import { getProductBySlug, getProducts, getRelatedProducts, type Product } from '@/lib/products';
 import { useFavoritesStore, useCartStore } from '@/lib/store';
 
 const fadeInUp = {
@@ -44,10 +44,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
       
       if (data) {
         setSelectedColor(data.colors?.[0]?.name || null);
-        const allProducts = await getProducts();
-        const related = allProducts
-          .filter((p) => p.category === data.category && p.id !== data.id)
-          .slice(0, 4);
+        const related = await getRelatedProducts(data.id, data.category);
         setRelatedProducts(related);
       }
       
@@ -241,6 +238,25 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
                     >
                       <Plus className="w-4 h-4 text-[#1A3A5C]" />
                     </button>
+                  </div>
+
+                  {/* Stock Status */}
+                  <div className="flex flex-col gap-1 min-w-[120px]">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${
+                        (product.stock_quantity || 0) > 0 ? 'bg-emerald-500' : 'bg-rose-500'
+                      }`} />
+                      <span className={`text-[11px] font-bold uppercase tracking-wider ${
+                        (product.stock_quantity || 0) > 0 ? 'text-emerald-500' : 'text-rose-500'
+                      }`}>
+                        {(product.stock_quantity || 0) > 0 ? 'Disponível em Estoque' : 'Esgotado'}
+                      </span>
+                    </div>
+                    {(product.stock_quantity || 0) > 0 && (product.stock_quantity || 0) <= (product.min_stock || 5) && (
+                      <span className="text-[10px] font-medium text-rose-500 italic">
+                        Restam apenas {product.stock_quantity} unidades!
+                      </span>
+                    )}
                   </div>
 
                   <button 

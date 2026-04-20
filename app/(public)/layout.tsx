@@ -183,7 +183,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             <ul className="space-y-3 md:space-y-4">
               <li><Link href="/sobre" className="hover:text-[#1A3A5C] transition-colors">Sobre Nós</Link></li>
               <li><Link href="/contato" className="hover:text-[#1A3A5C] transition-colors">Contato</Link></li>
-              <li><Link href="/parceiros" className="hover:text-[#1A3A5C] transition-colors">Seja um Parceiro</Link></li>
+              <li><Link href="https://wa.me/5511988470858?text=Olá,%20tenho%20interesse%20em%20me%20tornar%20um%20parceiro." target="_blank" className="hover:text-[#C8A951] transition-colors">Seja um Parceiro</Link></li>
               <li><Link href="/blog" className="hover:text-[#1A3A5C] transition-colors">Blog</Link></li>
             </ul>
           </div>

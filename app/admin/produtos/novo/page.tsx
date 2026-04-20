@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import ProductImageManager from '../components/ProductImageManager';
+import { formatCurrency, parseCurrencyToNumber } from '@/lib/utils';
+import StatusModal from '../../components/StatusModal';
 
 export default function NovoProdutoPage() {
   const router = useRouter();
@@ -16,6 +18,17 @@ export default function NovoProdutoPage() {
   const [categories, setCategories] = useState<any[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [statusModal, setStatusModal] = useState<{
+    isOpen: boolean;
+    type: 'success' | 'error' | 'warning';
+    title: string;
+    message: string;
+  }>({
+    isOpen: false,
+    type: 'success',
+    title: '',
+    message: ''
+  });
   const [isLoadingDuplicate, setIsLoadingDuplicate] = useState(false);
   const [pendingImages, setPendingImages] = useState<any[]>([]);
 
@@ -75,8 +88,8 @@ export default function NovoProdutoPage() {
           name: `${data.name} (Cópia)`,
           ref: `${data.ref}-COPY`,
           slug: `${data.slug}-copia`,
-          price: data.price.toString(),
-          promo_price: data.promo_price ? data.promo_price.toString() : '',
+          price: data.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 }),
+          promo_price: data.promo_price ? data.promo_price.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '',
         });
       }
     } catch (err) {
@@ -88,6 +101,17 @@ export default function NovoProdutoPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
+    
+    if (name === 'price' || name === 'promo_price') {
+      const digitsOnly = value.replace(/\D/g, '');
+      const formatted = (Number(digitsOnly) / 100).toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+      setFormData(prev => ({ ...prev, [name]: formatted }));
+      return;
+    }
+
     setFormData(prev => ({
       ...prev,
       [name]: type === 'number' ? Number(value) : value
@@ -111,7 +135,12 @@ export default function NovoProdutoPage() {
       
       // Validação básica
       if (!formData.name || !formData.ref || !formData.category_id || !formData.price) {
-        alert('Por favor, preencha todos os campos obrigatórios (*)');
+        setStatusModal({
+          isOpen: true,
+          type: 'warning',
+          title: 'Campos Obrigatórios',
+          message: 'Por favor, preencha todos os campos marcados com asterisco (*).'
+        });
         setIsSaving(false);
         return;
       }
@@ -121,8 +150,8 @@ export default function NovoProdutoPage() {
 
       const productToSave = {
         ...formData,
-        price: parseFloat(formData.price.toString().replace(',', '.')),
-        promo_price: formData.promo_price ? parseFloat(formData.promo_price.toString().replace(',', '.')) : null,
+        price: parseCurrencyToNumber(formData.price),
+        promo_price: formData.promo_price ? parseCurrencyToNumber(formData.promo_price) : null,
       };
 
       // Remover o ID se existir (no caso de duplicação)
@@ -173,10 +202,24 @@ export default function NovoProdutoPage() {
         }
       }
 
-      router.push('/admin/produtos');
+      setStatusModal({
+        isOpen: true,
+        type: 'success',
+        title: 'Criado!',
+        message: 'O novo produto foi cadastrado com sucesso no sistema.'
+      });
+      
+      setTimeout(() => {
+        router.push('/admin/produtos');
+      }, 2000);
     } catch (err) {
       console.error('Erro ao salvar produto:', err);
-      alert('Erro ao salvar produto.');
+      setStatusModal({
+        isOpen: true,
+        type: 'error',
+        title: 'Erro no Cadastro',
+        message: 'Nao foi possível criar o produto. Tente novamente mais tarde.'
+      });
     } finally {
       setIsSaving(false);
     }
@@ -460,6 +503,13 @@ export default function NovoProdutoPage() {
 
         </div>
       </div>
+      <StatusModal 
+        isOpen={statusModal.isOpen}
+        onClose={() => setStatusModal(prev => ({ ...prev, isOpen: false }))}
+        type={statusModal.type}
+        title={statusModal.title}
+        message={statusModal.message}
+      />
     </div>
   );
 }

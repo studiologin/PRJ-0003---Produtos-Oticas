@@ -52,8 +52,15 @@ export async function POST(request: Request) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('Melhor Envio Error:', errorData);
-      return NextResponse.json({ error: 'Erro ao calcular frete' }, { status: response.status });
+      console.error('------- DEBUG MELHOR ENVIO -------');
+      console.error('Status:', response.status);
+      console.error('Error Details:', JSON.stringify(errorData, null, 2));
+      console.error('Token Used (first 10):', MELHOR_ENVIO_TOKEN?.substring(0, 10));
+      console.error('----------------------------------');
+      return NextResponse.json({ 
+        error: 'Erro ao calcular frete', 
+        details: errorData 
+      }, { status: response.status });
     }
 
     const data = await response.json();
