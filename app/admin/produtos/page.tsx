@@ -253,10 +253,10 @@ export default function AdminProdutosPage() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
-                        <span className={`text-sm font-bold ${product.stock_quantity <= (product.min_stock || 5) ? 'text-rose-500' : 'text-[#4A5568]'}`}>
-                          {product.stock_quantity} un
+                        <span className={`text-sm font-bold ${(product.stock_quantity || 0) <= (product.min_stock || 5) ? 'text-rose-500' : 'text-[#4A5568]'}`}>
+                          {product.stock_quantity || 0} un
                         </span>
-                        {product.stock_quantity <= (product.min_stock || 5) && (
+                        {(product.stock_quantity || 0) <= (product.min_stock || 5) && (
                           <span className="text-[10px] text-rose-500 font-bold uppercase tracking-wider">Estoque Baixo</span>
                         )}
                       </div>
