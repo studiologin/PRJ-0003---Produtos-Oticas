@@ -156,7 +156,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
           </div>
 
           {/* Right: Info */}
-          <div className="flex flex-col h-full justify-center">
+          <div className="flex flex-col h-full justify-start">
             <motion.div 
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
