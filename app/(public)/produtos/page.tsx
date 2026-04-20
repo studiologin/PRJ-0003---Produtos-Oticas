@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Search, ShoppingCart, Check } from 'lucide-react';
 import { motion } from 'motion/react';
-import { getProducts, type Product } from '@/lib/products';
+import { getProducts, getCategories, type Product, type Category } from '@/lib/products';
 import { useState, useEffect } from 'react';
 import { useCartStore } from '@/lib/store';
 
@@ -21,25 +21,36 @@ export default function ProdutosPage() {
   const [addedItems, setAddedItems] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const addItem = useCartStore((state) => state.addItem);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       setLoading(true);
-      const data = await getProducts();
-      setProducts(data);
+      const [productsData, categoriesData] = await Promise.all([
+        getProducts(),
+        getCategories()
+      ]);
+      setProducts(productsData);
+      setCategories(categoriesData);
       setLoading(false);
     };
-    fetchProducts();
+    fetchData();
   }, []);
 
 
-  const filteredProducts = products.filter(product => 
-    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.ref.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = searchQuery === '' || 
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.ref.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesCategory = selectedCategory === '' || product.category === selectedCategory;
+    
+    return matchesSearch && matchesCategory;
+  });
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -139,11 +150,15 @@ export default function ProdutosPage() {
                 <input type="text" placeholder="SKU ou Referência..." className="w-full bg-warm-white border border-[#e2e8f0] rounded-full pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]/20 focus:border-[#1A3A5C] transition-all text-[#1A3A5C] placeholder:text-[#1A3A5C]/50" />
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 w-full lg:w-auto">
-                <select className="bg-warm-white border border-[#e2e8f0] rounded-full px-3 py-3 text-sm focus:outline-none focus:border-[#1A3A5C] transition-colors text-[#1A3A5C] cursor-pointer">
-                  <option value="">Categoria</option>
-                  <option value="lentes">Lentes</option>
-                  <option value="armacoes">Armações</option>
-                  <option value="equipamentos">Equipamentos</option>
+                <select 
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="bg-warm-white border border-[#e2e8f0] rounded-full px-3 py-3 text-sm focus:outline-none focus:border-[#1A3A5C] transition-colors text-[#1A3A5C] cursor-pointer"
+                >
+                  <option value="">Todas as Categorias</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.name}>{cat.name}</option>
+                  ))}
                 </select>
                 <select className="bg-warm-white border border-[#e2e8f0] rounded-full px-3 py-3 text-sm focus:outline-none focus:border-[#1A3A5C] transition-colors text-[#1A3A5C] cursor-pointer">
                   <option value="">Marca</option>

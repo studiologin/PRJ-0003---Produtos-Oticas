@@ -147,6 +147,21 @@ export async function getFeaturedProducts(): Promise<Product[]> {
   }
 }
 
+export async function getCategories(): Promise<Category[]> {
+  try {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .order('name', { ascending: true });
+
+    if (error) throw error;
+    return data || [];
+  } catch (err) {
+    console.error('Error fetching categories:', err);
+    return [];
+  }
+}
+
 // Global products fallback (for backward compatibility if needed, but async is better)
 export const products = mockProducts;
 
