@@ -36,6 +36,8 @@ interface Product {
   image: string;
   bestseller: boolean;
   is_active: boolean;
+  stock_quantity?: number;
+  min_stock?: number;
   categories?: {
     name: string;
   };
