@@ -142,7 +142,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
                 <button 
                   key={i} 
                   onClick={() => setActiveImageIndex(i)}
-                  className={`aspect-square relative bg-white rounded-2xl border-2 transition-all cursor-pointer hover:border-[#C8A951] ${activeImageIndex === i ? 'border-[#C8A951]' : 'border-transparent'}`}
+                  className={`aspect-square relative bg-white rounded-2xl border-2 transition-all cursor-pointer hover:border-[#C8A951] overflow-hidden ${activeImageIndex === i ? 'border-[#C8A951]' : 'border-transparent'}`}
                 >
                   <Image 
                     src={img} 
