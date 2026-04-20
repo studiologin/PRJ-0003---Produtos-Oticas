@@ -138,12 +138,12 @@ export async function getFeaturedProducts(): Promise<Product[]> {
       .limit(8);
 
     if (error) throw error;
-    if (!data || data.length === 0) return mockProducts.filter(p => p.bestseller);
+    if (!data) return [];
 
     return data.map(mapProduct);
   } catch (err) {
     console.error('Error fetching featured products:', err);
-    return mockProducts.filter(p => p.bestseller);
+    return [];
   }
 }
 
