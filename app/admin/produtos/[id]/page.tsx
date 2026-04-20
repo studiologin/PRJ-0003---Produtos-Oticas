@@ -469,7 +469,7 @@ export default function EditarProdutoPage() {
                </div>
                
                <ProductRelatedManager 
-                 productId={productId as string}
+                  productId={Number(productId)}
                />
              </div>
            )}
