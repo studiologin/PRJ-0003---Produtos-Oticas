@@ -23,7 +23,6 @@ export interface Product {
   stock_quantity?: number;
   min_stock?: number;
   is_active?: boolean;
-  price: number; // Venda Varejo
   cost_price?: number; // Custo
   wholesale_price?: number; // Venda Atacado
   original_price?: number; // Valor Original (Riscado)
