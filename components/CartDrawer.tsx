@@ -167,9 +167,16 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                             <Plus className="w-3 h-3 text-[#1A3A5C]" />
                           </button>
                         </div>
-                        <span className="text-[#1A3A5C] font-black text-sm">
-                          R$ {(item.product.price * item.quantity).toFixed(2).replace('.', ',')}
-                        </span>
+                        <div className="text-right">
+                          <span className="text-[#1A3A5C] font-black text-sm block">
+                            R$ {((item.quantity >= 10 && item.product.wholesale_price && item.product.wholesale_price > 0)
+                              ? item.product.wholesale_price * item.quantity
+                              : item.product.price * item.quantity).toFixed(2).replace('.', ',')}
+                          </span>
+                          {item.quantity >= 10 && item.product.wholesale_price && item.product.wholesale_price > 0 && (
+                            <span className="text-[8px] font-bold text-[#C8A951] uppercase tracking-tighter">Atacado Ativado</span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>

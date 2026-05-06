@@ -3,13 +3,26 @@ import Image from 'next/image';
 export default function SobrePage() {
   return (
     <div className="bg-warm-white text-[#1A3A5C]">
-      {/* Header Institucional */}
-      <section className="py-24 md:py-32 bg-[#F5F4F0] rounded-b-[40px] md:rounded-b-[80px] relative z-30 shadow-xl">
+      {/* Banner Section - Sem texto, apenas imagem, ocupando a altura da tela */}
+      <section className="relative h-screen w-full overflow-hidden rounded-b-[40px] md:rounded-b-[80px] shadow-xl z-50">
+        <Image 
+          src="https://jandmwnmaojswfwlrsva.supabase.co/storage/v1/object/public/Imagens%20do%20Site/capa-sobre-po.png" 
+          alt="Produtos Óticas Sobre Banner" 
+          fill 
+          className="object-cover object-center"
+          priority
+          referrerPolicy="no-referrer"
+        />
+        <div className="absolute inset-0 bg-black/5"></div>
+      </section>
+
+      {/* Header Institucional - Ajustado para aparecer após o banner */}
+      <section className="py-24 md:py-32 bg-[#F5F4F0] rounded-b-[40px] md:rounded-b-[80px] relative z-30 shadow-xl -mt-10 md:-mt-20">
         <div className="container mx-auto px-4 md:px-12 text-center max-w-3xl">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
+          <h1 className="text-4xl md:text-6xl font-display text-[#1A3A5C] mb-6">
             Nossa História
           </h1>
-          <p className="text-lg text-[#1A3A5C]/70 leading-relaxed">
+          <p className="text-xl text-[#1A3A5C]/70 leading-relaxed font-medium">
             Desde 2010, a Produtos Óticas tem sido o parceiro de confiança para milhares de óticas em todo o Brasil, fornecendo insumos de alta qualidade com agilidade e precisão.
           </p>
         </div>

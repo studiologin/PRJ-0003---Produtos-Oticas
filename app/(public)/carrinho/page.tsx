@@ -138,7 +138,8 @@ export default function CartPage() {
                       <span className="w-10 text-center font-bold text-[#1A3A5C]">{item.quantity}</span>
                       <button 
                         onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                        className="p-2 hover:bg-white rounded-lg transition-colors text-[#1A3A5C]"
+                        disabled={item.quantity >= (item.product.stock_quantity || 999)}
+                        className="p-2 hover:bg-white rounded-lg transition-colors text-[#1A3A5C] disabled:opacity-30 disabled:cursor-not-allowed"
                       >
                         <Plus className="w-4 h-4" />
                       </button>

@@ -28,20 +28,23 @@ export const useCartStore = create<CartStore>()(
       addItem: (product, quantity = 1) => {
         const currentItems = get().items;
         const existingItem = currentItems.find((item) => item.product.id === product.id);
+        const maxStock = product.stock_quantity ?? 999;
 
         if (existingItem) {
+          const newQuantity = Math.min(existingItem.quantity + quantity, maxStock);
           set({
             items: currentItems.map((item) =>
               item.product.id === product.id
-                ? { ...item, quantity: item.quantity + quantity }
+                ? { ...item, quantity: newQuantity }
                 : item
             ),
-            isDrawerOpen: true, // Auto open drawer
+            isDrawerOpen: true,
           });
         } else {
+          const initialQuantity = Math.min(quantity, maxStock);
           set({ 
-            items: [...currentItems, { product, quantity }],
-            isDrawerOpen: true, // Auto open drawer
+            items: [...currentItems, { product, quantity: initialQuantity }],
+            isDrawerOpen: true,
           });
         }
       },
@@ -52,29 +55,32 @@ export const useCartStore = create<CartStore>()(
       },
       updateQuantity: (productId, quantity) => {
         if (quantity < 1) return;
+        
         set({
-          items: get().items.map((item) =>
-            item.product.id === productId ? { ...item, quantity } : item
-          ),
+          items: get().items.map((item) => {
+            if (item.product.id === productId) {
+              const maxStock = item.product.stock_quantity ?? 999;
+              return { ...item, quantity: Math.min(quantity, maxStock) };
+            }
+            return item;
+          }),
         });
       },
       clearCart: () => set({ items: [] }),
       setDrawerOpen: (isOpen) => set({ isDrawerOpen: isOpen }),
       getTotalPrice: () => {
         return get().items.reduce(
-          (total, item) => total + item.product.price * item.quantity,
+          (total, item) => {
+            const currentPrice = (item.quantity >= 10 && item.product.wholesale_price && item.product.wholesale_price > 0)
+              ? item.product.wholesale_price
+              : item.product.price;
+            return total + currentPrice * item.quantity;
+          },
           0
         );
       },
       getDiscount: () => {
-        const totalItems = get().getTotalItems();
-        const subtotal = get().getTotalPrice();
-        
-        // B2B Bulk Discounts
-        if (totalItems >= 50) return subtotal * 0.15; // 15% discount for 50+ items
-        if (totalItems >= 20) return subtotal * 0.10; // 10% discount for 20+ items
-        if (totalItems >= 10) return subtotal * 0.05; // 5% discount for 10+ items
-        
+        // Global discounts removed in favor of item-level wholesale pricing
         return 0;
       },
       getTotalItems: () => {

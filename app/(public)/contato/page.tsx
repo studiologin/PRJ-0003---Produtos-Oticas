@@ -45,23 +45,27 @@ export default function ContatoPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-[10px] h-full">
               <div className="bg-white p-8 rounded-[32px] border border-[#d1d5db] shadow-md hover:shadow-lg transition-shadow h-full flex flex-col justify-center">
                 <div className="w-12 h-12 bg-[#1A3A5C]/10 rounded-2xl flex items-center justify-center mb-6">
-                  <Phone className="w-6 h-6 text-[#1A3A5C]" />
-                </div>
-                <h3 className="text-[#1A3A5C] font-bold text-lg mb-2">Telefone</h3>
-                <p className="text-[#1A3A5C]/80 text-sm mb-4">Segunda a Sexta, das 8h às 18h.</p>
-                <a href="tel:+5511999999999" className="text-[#C8A951] font-bold hover:underline">
-                  (11) 99999-9999
-                </a>
-              </div>
-
-              <div className="bg-white p-8 rounded-[32px] border border-[#d1d5db] shadow-md hover:shadow-lg transition-shadow h-full flex flex-col justify-center">
-                <div className="w-12 h-12 bg-[#1A3A5C]/10 rounded-2xl flex items-center justify-center mb-6">
                   <Mail className="w-6 h-6 text-[#1A3A5C]" />
                 </div>
                 <h3 className="text-[#1A3A5C] font-bold text-lg mb-2">E-mail</h3>
                 <p className="text-[#1A3A5C]/80 text-sm mb-4">Respondemos em até 24 horas úteis.</p>
                 <a href="mailto:contato@produtosoticas.com.br" className="text-[#C8A951] font-bold hover:underline break-all">
                   contato@produtosoticas.com.br
+                </a>
+              </div>
+
+              <div className="bg-[#25D366]/5 p-8 rounded-[32px] border border-[#25D366]/20 shadow-md hover:shadow-lg transition-shadow h-full flex flex-col justify-center group">
+                <div className="w-12 h-12 bg-[#25D366]/10 rounded-2xl flex items-center justify-center mb-6">
+                  <MessageSquare className="w-6 h-6 text-[#25D366]" />
+                </div>
+                <h3 className="text-[#1A3A5C] font-bold text-lg mb-2">WhatsApp</h3>
+                <p className="text-[#1A3A5C]/80 text-sm mb-4">Atendimento rápido e direto.</p>
+                <a 
+                  href="https://wa.me/5511988470858" 
+                  target="_blank" 
+                  className="text-[#25D366] font-bold hover:underline group-hover:scale-105 transition-transform inline-block"
+                >
+                  (11) 98847-0858
                 </a>
               </div>
 

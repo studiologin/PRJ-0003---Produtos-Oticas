@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { Search, ShoppingCart, Check } from 'lucide-react';
 import { motion } from 'motion/react';
 import { getProducts, getCategories, type Product, type Category } from '@/lib/products';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useCartStore } from '@/lib/store';
 
 const fadeInUp = {
@@ -15,16 +16,27 @@ const fadeInUp = {
   transition: { duration: 0.6, ease: "easeOut" as any }
 };
 
-export default function ProdutosPage() {
+function ProdutosContent() {
+  const searchParams = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [addedItems, setAddedItems] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [skuQuery, setSkuQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedDestaque, setSelectedDestaque] = useState('');
+  const [selectedPrice, setSelectedPrice] = useState('');
   const addItem = useCartStore((state) => state.addItem);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
+
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get('categoria');
+    if (categoryFromUrl) {
+      setSelectedCategory(categoryFromUrl);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,9 +59,20 @@ export default function ProdutosPage() {
       product.ref.toLowerCase().includes(searchQuery.toLowerCase()) ||
       product.category.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesCategory = selectedCategory === '' || product.category === selectedCategory;
+    const matchesSku = skuQuery === '' || product.ref.toLowerCase().includes(skuQuery.toLowerCase());
     
-    return matchesSearch && matchesCategory;
+    const matchesCategory = selectedCategory === '' || product.category === selectedCategory;
+
+    const matchesDestaque = selectedDestaque === '' || 
+      (selectedDestaque === 'novidades' && product.new) || 
+      (selectedDestaque === 'mais-vendidos' && product.bestseller);
+
+    let matchesPrice = true;
+    if (selectedPrice === '0-100') matchesPrice = product.price <= 100;
+    else if (selectedPrice === '100-300') matchesPrice = product.price > 100 && product.price <= 300;
+    else if (selectedPrice === '300+') matchesPrice = product.price > 300;
+    
+    return matchesSearch && matchesSku && matchesCategory && matchesDestaque && matchesPrice;
   });
 
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -107,7 +130,7 @@ export default function ProdutosPage() {
       <section className="relative h-screen w-full overflow-hidden rounded-b-[40px] md:rounded-b-[80px] shadow-xl z-50">
         {/* Desktop Banner */}
         <Image 
-          src="https://dcdn-us.mitiendanube.com/stores/006/909/950/products/freepik__-promptname-aprimoramento-ptico-premium-preservao-__92197-882d361adfa5e7f14117655565073913-1024-1024.webp" 
+          src="https://jandmwnmaojswfwlrsva.supabase.co/storage/v1/object/public/Imagens%20do%20Site/capa-produto-po.png" 
           alt="Produtos Óticas Banner Desktop" 
           fill 
           className="hidden md:block object-cover object-center"
@@ -116,7 +139,7 @@ export default function ProdutosPage() {
         />
         {/* Mobile Banner */}
         <Image 
-          src="https://wwikdikgmrsfusdyixfg.supabase.co/storage/v1/object/public/avatars/freepik__-promptname-campanha-ptica-composio-de-kits-luxo-h__27488.png" 
+          src="https://jandmwnmaojswfwlrsva.supabase.co/storage/v1/object/public/Imagens%20do%20Site/capa-produto-po.png" 
           alt="Produtos Óticas Banner Mobile" 
           fill 
           className="block md:hidden object-cover object-center"
@@ -147,9 +170,15 @@ export default function ProdutosPage() {
               </div>
               <div className="flex-1 w-full relative flex items-center">
                 <Search className="w-4 h-4 text-[#1A3A5C]/70 absolute left-4" />
-                <input type="text" placeholder="SKU ou Referência..." className="w-full bg-warm-white border border-[#e2e8f0] rounded-full pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]/20 focus:border-[#1A3A5C] transition-all text-[#1A3A5C] placeholder:text-[#1A3A5C]/50" />
+                <input 
+                  type="text" 
+                  placeholder="SKU ou Referência..." 
+                  value={skuQuery}
+                  onChange={(e) => setSkuQuery(e.target.value)}
+                  className="w-full bg-warm-white border border-[#e2e8f0] rounded-full pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#1A3A5C]/20 focus:border-[#1A3A5C] transition-all text-[#1A3A5C] placeholder:text-[#1A3A5C]/50" 
+                />
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 w-full lg:w-auto">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 w-full lg:w-auto">
                 <select 
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
@@ -160,27 +189,37 @@ export default function ProdutosPage() {
                     <option key={cat.id} value={cat.name}>{cat.name}</option>
                   ))}
                 </select>
-                <select className="bg-warm-white border border-[#e2e8f0] rounded-full px-3 py-3 text-sm focus:outline-none focus:border-[#1A3A5C] transition-colors text-[#1A3A5C] cursor-pointer">
-                  <option value="">Marca</option>
-                  <option value="acuvue">Acuvue</option>
-                  <option value="alcon">Alcon</option>
-                  <option value="zeiss">Zeiss</option>
+                <select 
+                  value={selectedDestaque}
+                  onChange={(e) => setSelectedDestaque(e.target.value)}
+                  className="bg-warm-white border border-[#e2e8f0] rounded-full px-3 py-3 text-sm focus:outline-none focus:border-[#1A3A5C] transition-colors text-[#1A3A5C] cursor-pointer"
+                >
+                  <option value="">Destaques</option>
+                  <option value="novidades">Novidades</option>
+                  <option value="mais-vendidos">Mais Vendidos</option>
                 </select>
-                <select className="bg-warm-white border border-[#e2e8f0] rounded-full px-3 py-3 text-sm focus:outline-none focus:border-[#1A3A5C] transition-colors text-[#1A3A5C] cursor-pointer">
-                  <option value="">Tipo</option>
-                  <option value="diario">Diário</option>
-                  <option value="mensal">Mensal</option>
-                  <option value="anual">Anual</option>
-                </select>
-                <select className="bg-warm-white border border-[#e2e8f0] rounded-full px-3 py-3 text-sm focus:outline-none focus:border-[#1A3A5C] transition-colors text-[#1A3A5C] cursor-pointer">
+                <select 
+                  value={selectedPrice}
+                  onChange={(e) => setSelectedPrice(e.target.value)}
+                  className="bg-warm-white border border-[#e2e8f0] rounded-full px-3 py-3 text-sm focus:outline-none focus:border-[#1A3A5C] transition-colors text-[#1A3A5C] cursor-pointer"
+                >
                   <option value="">Preço</option>
-                  <option value="0-50">Até R$ 50</option>
-                  <option value="50-100">R$ 50 - 100</option>
-                  <option value="100+">R$ 100+</option>
+                  <option value="0-100">Até R$ 100</option>
+                  <option value="100-300">R$ 100 - R$ 300</option>
+                  <option value="300+">Acima de R$ 300</option>
                 </select>
               </div>
-              <button className="w-full lg:w-auto bg-[#1A3A5C] text-white px-10 py-3 rounded-full font-bold text-sm hover:bg-[#1A3A5C]/90 transition-all active:scale-95 shadow-md">
-                Filtrar
+              <button 
+                onClick={() => {
+                  setSearchQuery('');
+                  setSkuQuery('');
+                  setSelectedCategory('');
+                  setSelectedDestaque('');
+                  setSelectedPrice('');
+                }}
+                className="w-full lg:w-auto bg-[#1A3A5C] text-white px-10 py-3 rounded-full font-bold text-sm hover:bg-[#1A3A5C]/90 transition-all active:scale-95 shadow-md"
+              >
+                Limpar
               </button>
             </div>
           </div>
@@ -221,7 +260,12 @@ export default function ProdutosPage() {
                     <h3 className="text-[#1A3A5C] text-base font-bold mb-1 truncate leading-tight group-hover:text-[#C8A951] transition-colors">{product.name}</h3>
                     <p className="text-[#1A3A5C]/50 text-xs mb-3 line-clamp-2 h-8">{product.shortDescription}</p>
                     <div className="flex items-center justify-between mt-auto pt-2">
-                      <div className="text-[#1A3A5C] font-black text-xl">R$ {product.price.toFixed(2).replace('.', ',')}</div>
+                       <div className="flex flex-col">
+                         {product.original_price && product.original_price > 0 && (
+                           <span className="text-[10px] text-[#1A3A5C]/40 line-through">R$ {product.original_price.toFixed(2).replace('.', ',')}</span>
+                         )}
+                         <div className="text-[#1A3A5C] font-black text-xl">R$ {product.price.toFixed(2).replace('.', ',')}</div>
+                       </div>
                       <button 
                         onClick={(e) => handleAddToCart(e, product)}
                         className={`p-2.5 rounded-full transition-all duration-300 shadow-sm ${
@@ -253,5 +297,17 @@ export default function ProdutosPage() {
         </div>
       </motion.section>
     </div>
+  );
+}
+
+export default function ProdutosPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-warm-bg flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#1A3A5C]"></div>
+      </div>
+    }>
+      <ProdutosContent />
+    </Suspense>
   );
 }

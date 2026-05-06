@@ -4,18 +4,22 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Search, ShoppingCart, User, Menu, X, LogOut, Package, Home, Info, Phone, ShoppingBag } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X, LogOut, Package, Home, Info, Phone, ShoppingBag, Settings2 } from 'lucide-react';
 import { useCartStore } from '@/lib/store';
 import CartDrawer from '@/components/CartDrawer';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import { getCategories, type Category } from '@/lib/products';
+import WhatsAppFloatingButton from '@/components/WhatsAppFloatingButton';
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [scrolled, setScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [session, setSession] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
   
   const totalItems = useCartStore((state) => state.getTotalItems());
   const isCartOpen = useCartStore((state) => state.isDrawerOpen);
@@ -28,12 +32,32 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
     // Check initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
+      if (session) fetchProfile(session.user.id);
     });
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
+      if (session) {
+        fetchProfile(session.user.id);
+      } else {
+        setProfile(null);
+      }
     });
+
+    const fetchProfile = async (userId: string) => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      if (data) setProfile(data);
+    };
+
+    const fetchCategories = async () => {
+      const data = await getCategories();
+      setCategories(data);
+    };
+    fetchCategories();
 
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -97,7 +121,9 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                     className="text-[#1A3A5C] hover:text-[#C8A951] transition-colors flex items-center gap-2"
                   >
                     <div className="w-8 h-8 rounded-full bg-[#1A3A5C] text-white flex items-center justify-center text-[10px] font-bold">
-                       {session.user.email?.slice(0, 2).toUpperCase()}
+                        {profile?.full_name 
+                          ? profile.full_name.split(' ').map((n: any) => n[0]).join('').slice(0, 2).toUpperCase()
+                          : session.user.email?.slice(0, 2).toUpperCase()}
                     </div>
                   </button>
 
@@ -112,18 +138,31 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
                           className="absolute right-0 mt-4 w-56 bg-white rounded-3xl shadow-2xl border border-[#e2e8f0] py-4 z-50 overflow-hidden"
                         >
                            <div className="px-6 pb-4 border-b border-[#e2e8f0] mb-2">
-                              <p className="text-[10px] font-bold text-[#1A3A5C]/40 uppercase tracking-widest mb-1">E-mail</p>
-                              <p className="text-xs font-bold text-[#1A3A5C] truncate">{session.user.email}</p>
+                              <p className="text-[10px] font-bold text-[#1A3A5C]/40 uppercase tracking-widest mb-1">Usuário</p>
+                              <p className="text-xs font-bold text-[#1A3A5C] truncate">{profile?.full_name || session.user.email}</p>
                            </div>
                            
-                           <Link 
-                             href="/conta/pedidos" 
-                             onClick={() => setShowUserMenu(false)}
-                             className="flex items-center gap-3 px-6 py-3 hover:bg-[#F5F4F0] text-[#1A3A5C] transition-colors"
-                           >
-                             <Package className="w-4 h-4 text-[#C8A951]" />
-                             <span className="text-sm font-bold">Meus Pedidos</span>
-                           </Link>
+                           {profile?.role === 'admin' && (
+                             <Link 
+                               href="/admin" 
+                               onClick={() => setShowUserMenu(false)}
+                               className="flex items-center gap-3 px-6 py-3 hover:bg-[#F5F4F0] text-[#1A3A5C] transition-colors border-b border-[#e2e8f0]/50"
+                             >
+                               <Settings2 className="w-4 h-4 text-[#C8A951]" />
+                               <span className="text-sm font-bold">Painel Adm</span>
+                             </Link>
+                           )}
+                           
+                           {profile?.role !== 'admin' && (
+                             <Link 
+                               href="/conta/pedidos" 
+                               onClick={() => setShowUserMenu(false)}
+                               className="flex items-center gap-3 px-6 py-3 hover:bg-[#F5F4F0] text-[#1A3A5C] transition-colors"
+                             >
+                               <Package className="w-4 h-4 text-[#C8A951]" />
+                               <span className="text-sm font-bold">Meus Pedidos</span>
+                             </Link>
+                           )}
 
                            <button 
                             onClick={handleLogout}
@@ -190,16 +229,36 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
           <div>
             <h4 className="text-[#1A3A5C] font-semibold mb-5 md:mb-6 uppercase text-xs tracking-wider">Categorias</h4>
             <ul className="space-y-3 md:space-y-4">
-              <li><Link href="/categoria/lentes" className="hover:text-[#1A3A5C] transition-colors">Lentes de Contato</Link></li>
-              <li><Link href="/categoria/armacoes" className="hover:text-[#1A3A5C] transition-colors">Armações</Link></li>
-              <li><Link href="/categoria/equipamentos" className="hover:text-[#1A3A5C] transition-colors">Equipamentos</Link></li>
-              <li><Link href="/categoria/acessorios" className="hover:text-[#1A3A5C] transition-colors">Acessórios</Link></li>
+              {categories.slice(0, 4).map((cat) => (
+                <li key={cat.id}>
+                  <Link href={`/produtos?categoria=${cat.name}`} className="hover:text-[#1A3A5C] transition-colors">
+                    {cat.name}
+                  </Link>
+                </li>
+              ))}
+              {categories.length === 0 && (
+                <>
+                  <li><Link href="/categoria/lentes" className="hover:text-[#1A3A5C] transition-colors">Lentes de Contato</Link></li>
+                  <li><Link href="/categoria/armacoes" className="hover:text-[#1A3A5C] transition-colors">Armações</Link></li>
+                  <li><Link href="/categoria/equipamentos" className="hover:text-[#1A3A5C] transition-colors">Equipamentos</Link></li>
+                  <li><Link href="/categoria/acessorios" className="hover:text-[#1A3A5C] transition-colors">Acessórios</Link></li>
+                </>
+              )}
             </ul>
           </div>
           <div>
             <h4 className="text-[#1A3A5C] font-semibold mb-5 md:mb-6 uppercase text-xs tracking-wider">Atendimento</h4>
             <ul className="space-y-3 md:space-y-4">
-              <li>0800 123 4567</li>
+              <li>
+                <a 
+                  href="https://wa.me/5511988470858" 
+                  target="_blank" 
+                  className="hover:text-[#25D366] transition-colors flex items-center justify-center sm:justify-start gap-2"
+                >
+                  <span className="font-bold">(11) 98847-0858</span>
+                  <span className="bg-[#25D366] text-white text-[8px] px-2 py-0.5 rounded-full uppercase tracking-tighter">WhatsApp</span>
+                </a>
+              </li>
               <li>contato@produtosoticas.com.br</li>
               <li>Seg - Sex, 8h às 18h</li>
             </ul>
@@ -238,6 +297,8 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
           </Link>
         </div>
       </nav>
+
+      <WhatsAppFloatingButton />
     </div>
   );
 }

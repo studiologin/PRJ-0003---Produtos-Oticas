@@ -20,6 +20,32 @@ export default function HomePage() {
   const controls = useAnimation();
   const { toggleFavorite, isFavorite } = useFavoritesStore();
 
+  // Catalog Download Form State
+  const [catalogForm, setCatalogForm] = useState({ nome: '', empresa: '', email: '', contato: '' });
+  const [isSubmittingCatalog, setIsSubmittingCatalog] = useState(false);
+  const [catalogSubmitted, setCatalogSubmitted] = useState(false);
+
+  const handleCatalogSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmittingCatalog(true);
+    try {
+      const response = await fetch('https://n8n.studiologin.com.br/webhook/catalagobaixado', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(catalogForm),
+      });
+      if (response.ok) {
+        setCatalogSubmitted(true);
+      }
+    } catch (error) {
+      console.error('Erro ao enviar formulário do catálogo:', error);
+      // Even if it fails, we might want to show the button if the user is persistent, 
+      // but for now let's keep it strict.
+    } finally {
+      setIsSubmittingCatalog(false);
+    }
+  };
+
   useEffect(() => {
     const fetchFeatured = async () => {
       const data = await getFeaturedProducts();
@@ -305,10 +331,128 @@ export default function HomePage() {
         </div>
       </motion.section>
 
+      {/* Catalog Download Section - Fundo Azul Premium */}
+      <motion.section 
+        {...fadeInUp}
+        className="py-12 md:py-16 bg-[#1A3A5C] text-white -mt-10 md:-mt-20 pt-16 md:pt-24 relative z-31 rounded-b-[40px] md:rounded-b-[80px] shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+      >
+        <div className="container mx-auto px-4 md:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+            {/* Left Side: Catalog Cover */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="relative aspect-[3/4] md:aspect-square lg:aspect-[4/5] flex items-center justify-center"
+            >
+              <Image 
+                src="https://jandmwnmaojswfwlrsva.supabase.co/storage/v1/object/public/Imagens%20do%20Site/Capa%20Catalogo%20-%20PO%202026.png" 
+                alt="Capa Catálogo Produtos Óticas 2026" 
+                fill 
+                className="object-contain drop-shadow-[0_35px_35px_rgba(0,0,0,0.4)]"
+                referrerPolicy="no-referrer"
+              />
+            </motion.div>
+
+            {/* Right Side: Content & Form */}
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4 leading-tight">
+                  Tenha nosso catálogo completo em mãos.
+                </h2>
+                <p className="text-white/60 text-lg leading-relaxed">
+                  Preencha os dados abaixo para desbloquear o acesso exclusivo ao nosso catálogo digital 2026 e conferir todas as novidades em primeira mão.
+                </p>
+              </div>
+
+              {!catalogSubmitted ? (
+                <form onSubmit={handleCatalogSubmit} className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 ml-1">Seu Nome</label>
+                      <input 
+                        required
+                        type="text" 
+                        placeholder="Ex: João Silva"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:outline-none focus:border-[#C8A951] transition-all placeholder:text-white/20"
+                        value={catalogForm.nome}
+                        onChange={(e) => setCatalogForm({...catalogForm, nome: e.target.value})}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 ml-1">Sua Empresa</label>
+                      <input 
+                        required
+                        type="text" 
+                        placeholder="Ex: Ótica Sol"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:outline-none focus:border-[#C8A951] transition-all placeholder:text-white/20"
+                        value={catalogForm.empresa}
+                        onChange={(e) => setCatalogForm({...catalogForm, empresa: e.target.value})}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 ml-1">E-mail Corporativo</label>
+                    <input 
+                      required
+                      type="email" 
+                      placeholder="joao@empresa.com.br"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:outline-none focus:border-[#C8A951] transition-all placeholder:text-white/20"
+                      value={catalogForm.email}
+                      onChange={(e) => setCatalogForm({...catalogForm, email: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 ml-1">WhatsApp / Contato</label>
+                    <input 
+                      required
+                      type="tel" 
+                      placeholder="(11) 99999-9999"
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 focus:outline-none focus:border-[#C8A951] transition-all placeholder:text-white/20"
+                      value={catalogForm.contato}
+                      onChange={(e) => setCatalogForm({...catalogForm, contato: e.target.value})}
+                    />
+                  </div>
+                  <button 
+                    disabled={isSubmittingCatalog}
+                    type="submit" 
+                    className="w-full bg-[#C8A951] text-[#1A3A5C] font-bold py-5 rounded-2xl hover:bg-[#C8A951]/90 transition-all shadow-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmittingCatalog ? 'Enviando...' : 'Solicitar Acesso ao Catálogo'}
+                  </button>
+                </form>
+              ) : (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[32px] p-10 text-center space-y-6"
+                >
+                  <div className="w-16 h-16 bg-[#C8A951]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <ShieldCheck className="w-8 h-8 text-[#C8A951]" />
+                  </div>
+                  <h3 className="text-2xl font-bold">Cadastro Realizado!</h3>
+                  <p className="text-white/60">
+                    Seu acesso foi liberado. Clique no botão abaixo para baixar a versão completa em PDF.
+                  </p>
+                  <Link 
+                    href="https://jandmwnmaojswfwlrsva.supabase.co/storage/v1/object/public/Imagens%20do%20Site/Catalogo%20Produtos%20Oticas%20-%20Colecao%202026.pdf" 
+                    target="_blank"
+                    className="inline-flex items-center justify-center w-full bg-white text-[#1A3A5C] font-bold py-5 rounded-2xl hover:bg-[#F5F4F0] transition-all shadow-xl active:scale-95"
+                  >
+                    <Package className="w-5 h-5 mr-3" />
+                    Baixar Catálogo PDF (2026)
+                  </Link>
+                </motion.div>
+              )}
+            </div>
+          </div>
+        </div>
+      </motion.section>
+
       {/* Engenharia e Qualidade Section (Estética Glassmorphism / Exploded View) */}
       <motion.section 
         {...fadeInUp}
-        className="py-24 md:py-32 relative -mt-10 md:-mt-20 pt-20 md:pt-32 z-31 overflow-hidden"
+        className="py-24 md:py-32 relative -mt-10 md:-mt-20 pt-20 md:pt-32 z-30 rounded-b-[40px] md:rounded-b-[80px] shadow-2xl overflow-hidden"
       >
         {/* Background Image - Sharp but subtle */}
         <div className="absolute inset-0 z-0">
@@ -433,9 +577,9 @@ export default function HomePage() {
       {/* Catalog Section (Featured Products Carousel) */}
       <motion.section 
         {...fadeInUp}
-        className="flex-1 py-20 md:py-32 px-4 md:px-12 bg-warm-white -mt-10 md:-mt-20 pt-20 md:pt-32 relative z-30 rounded-b-[40px] md:rounded-b-[80px] shadow-xl overflow-hidden"
+        className="flex-1 py-20 md:py-32 bg-warm-white -mt-10 md:-mt-20 pt-20 md:pt-32 relative z-20 rounded-b-[40px] md:rounded-b-[80px] shadow-xl overflow-hidden"
       >
-        <div className="container mx-auto">
+        <div className="container mx-auto px-4 md:px-8">
           <div className="flex justify-between items-end mb-12">
             <div>
               <span className="text-[#1A3A5C] font-bold uppercase tracking-[0.2em] text-[10px] mb-2 block">Destaques</span>

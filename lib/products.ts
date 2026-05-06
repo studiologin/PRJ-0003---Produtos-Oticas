@@ -23,7 +23,10 @@ export interface Product {
   stock_quantity?: number;
   min_stock?: number;
   is_active?: boolean;
-  promo_price?: number;
+  price: number; // Venda Varejo
+  cost_price?: number; // Custo
+  wholesale_price?: number; // Venda Atacado
+  original_price?: number; // Valor Original (Riscado)
   images?: string[];
 }
 
@@ -84,6 +87,9 @@ const mapProduct = (p: any): Product => ({
   name: p.name,
   ref: p.ref,
   price: Number(p.price),
+  cost_price: Number(p.cost_price || 0),
+  wholesale_price: Number(p.wholesale_price || 0),
+  original_price: Number(p.original_price || 0),
   category: p.categories?.name || 'Geral',
   description: p.description,
   shortDescription: p.short_description,

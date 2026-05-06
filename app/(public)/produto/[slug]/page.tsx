@@ -4,7 +4,7 @@ import { use, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ChevronRight, ShieldCheck, Truck, RotateCcw, Package, Minus, Plus, ShoppingCart, Star, MapPin, Heart } from 'lucide-react';
+import { ChevronRight, ShieldCheck, Truck, RotateCcw, Package, Minus, Plus, ShoppingCart, Star, MapPin, Heart, Award } from 'lucide-react';
 import { motion } from 'motion/react';
 import { getProductBySlug, getProducts, getRelatedProducts, type Product } from '@/lib/products';
 import { useFavoritesStore, useCartStore } from '@/lib/store';
@@ -44,6 +44,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
       
       if (data) {
         setSelectedColor(data.colors?.[0]?.name || null);
+        setQuantity(data.stock_quantity && data.stock_quantity > 0 ? 1 : 0);
         const related = await getRelatedProducts(data.id, data.category);
         setRelatedProducts(related);
       }
@@ -128,7 +129,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
               />
               {product.bestseller && (
                 <div className="absolute top-8 left-8">
-                  <span className="bg-[#C8A951] text-[#1A3A5C] px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg">Bestseller</span>
+                  <span className="bg-[#C8A951] text-[#1A3A5C] px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg">Mais vendido</span>
                 </div>
               )}
             </motion.div>
@@ -175,12 +176,47 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
                 <p className="text-[#1A3A5C]/40 text-xs font-mono">REF: {product.ref}</p>
               </div>
 
-              <div className="space-y-2">
-                <div className="flex items-baseline gap-4">
-                  <span className="text-[#1A3A5C] text-4xl font-bold">R$ {product.price.toFixed(2).replace('.', ',')}</span>
-                  <span className="text-[#1A3A5C]/30 text-lg line-through">R$ {(product.price * 1.25).toFixed(2).replace('.', ',')}</span>
+              <div className="space-y-4">
+                <div className="flex flex-col gap-1">
+                  {quantity >= 10 && product.wholesale_price && product.wholesale_price > 0 && (
+                    <span className="text-[10px] font-bold text-[#C8A951] uppercase tracking-widest flex items-center gap-1">
+                      <Award className="w-3 h-3" />
+                      Preço de Atacado Ativado
+                    </span>
+                  )}
+                  <div className="flex items-baseline gap-4">
+                    <span className="text-[#1A3A5C] text-4xl md:text-5xl font-bold">
+                      R$ {((quantity >= 10 && product.wholesale_price && product.wholesale_price > 0) 
+                        ? product.wholesale_price 
+                        : product.price).toFixed(2).replace('.', ',')}
+                    </span>
+                    {product.original_price && product.original_price > 0 && (
+                      <span className="text-[#1A3A5C]/30 text-lg line-through">
+                        R$ {product.original_price.toFixed(2).replace('.', ',')}
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <p className="text-[#1A3A5C]/60 text-sm">Ou em até <span className="text-[#1A3A5C] font-bold">10x de R$ {(product.price / 10).toFixed(2).replace('.', ',')}</span> sem juros</p>
+                <p className="text-[#1A3A5C]/60 text-sm">
+                  Ou em até <span className="text-[#1A3A5C] font-bold">10x de R$ {(((quantity >= 10 && product.wholesale_price && product.wholesale_price > 0) 
+                    ? product.wholesale_price 
+                    : product.price) / 10).toFixed(2).replace('.', ',')}</span> sem juros
+                </p>
+                
+                {product.wholesale_price && product.wholesale_price > 0 && quantity < 10 && (
+                  <div className="bg-[#C8A951]/5 border border-[#C8A951]/20 rounded-xl p-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                       <Package className="w-4 h-4 text-[#C8A951]" />
+                       <span className="text-[11px] font-medium text-[#1A3A5C]">Compre {10 - quantity} mais e pague <span className="font-bold">R$ {product.wholesale_price.toFixed(2).replace('.', ',')}</span>/un</span>
+                    </div>
+                    <button 
+                      onClick={() => setQuantity(10)}
+                      className="text-[10px] font-bold text-[#C8A951] uppercase tracking-tighter hover:underline"
+                    >
+                      Ativar Atacado
+                    </button>
+                  </div>
+                )}
               </div>
 
               <p className="text-[#1A3A5C]/70 text-base leading-relaxed max-w-lg">
@@ -224,17 +260,21 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
               <div className="space-y-6 pt-4">
                 <div className="flex flex-wrap items-center gap-6">
                   {/* Quantity Stepper */}
-                  <div className="flex items-center h-14 bg-white rounded-full border border-[#DDE1E9] px-2">
+                  <div className="flex items-center h-14 bg-white rounded-full border border-[#DDE1E9] px-2 shadow-sm">
                     <button 
                       onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                      className="w-10 h-10 flex items-center justify-center hover:bg-[#F8F9FB] rounded-full transition-colors"
+                      disabled={(product.stock_quantity || 0) === 0}
+                      className="w-10 h-10 flex items-center justify-center hover:bg-[#F8F9FB] rounded-full transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                     >
                       <Minus className="w-4 h-4 text-[#1A3A5C]" />
                     </button>
-                    <span className="w-12 text-center font-bold text-[#1A3A5C]">{quantity}</span>
+                    <span className="w-12 text-center font-bold text-[#1A3A5C] min-w-[32px]">
+                      {(product.stock_quantity || 0) === 0 ? 0 : quantity}
+                    </span>
                     <button 
-                      onClick={() => setQuantity(q => q + 1)}
-                      className="w-10 h-10 flex items-center justify-center hover:bg-[#F8F9FB] rounded-full transition-colors"
+                      onClick={() => setQuantity(q => Math.min(q + 1, product.stock_quantity || 999))}
+                      disabled={(product.stock_quantity || 0) === 0 || quantity >= (product.stock_quantity || 0)}
+                      className="w-10 h-10 flex items-center justify-center hover:bg-[#F8F9FB] rounded-full transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                     >
                       <Plus className="w-4 h-4 text-[#1A3A5C]" />
                     </button>
@@ -249,7 +289,9 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
                       <span className={`text-[11px] font-bold uppercase tracking-wider ${
                         (product.stock_quantity || 0) > 0 ? 'text-emerald-500' : 'text-rose-500'
                       }`}>
-                        {(product.stock_quantity || 0) > 0 ? 'Disponível em Estoque' : 'Esgotado'}
+                        {(product.stock_quantity || 0) > 0 
+                          ? `${product.stock_quantity} unidades disponíveis` 
+                          : 'Esgotado'}
                       </span>
                     </div>
                     {(product.stock_quantity || 0) > 0 && (product.stock_quantity || 0) <= (product.min_stock || 5) && (
@@ -261,12 +303,13 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
 
                   <button 
                     onClick={() => {
-                      addItem(product, quantity);
+                      if (quantity > 0) addItem(product, quantity);
                     }}
-                    className="h-14 flex-1 bg-[#1A3A5C] text-white rounded-full font-bold flex items-center justify-center gap-3 hover:bg-[#C8A951] transition-all duration-300 shadow-xl shadow-[#1A3A5C]/10 active:scale-95 px-8"
+                    disabled={(product.stock_quantity || 0) === 0}
+                    className="h-14 flex-1 bg-[#1A3A5C] text-white rounded-full font-bold flex items-center justify-center gap-3 hover:bg-[#C8A951] transition-all duration-300 shadow-xl shadow-[#1A3A5C]/10 active:scale-95 px-8 disabled:opacity-50 disabled:grayscale disabled:cursor-not-allowed"
                   >
                     <ShoppingCart className="w-5 h-5" />
-                    Adicionar ao Carrinho
+                    {(product.stock_quantity || 0) > 0 ? 'Adicionar ao Carrinho' : 'Item Esgotado'}
                   </button>
 
                   <button
@@ -279,7 +322,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
                 </div>
 
                 {/* Benefits List (Reintegrated & Compact) */}
-                <div className="grid grid-cols-3 gap-4 py-6 border-y border-[#DDE1E9]">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-6 border-y border-[#DDE1E9]">
                   <div className="flex items-center gap-2">
                     <Truck className="w-4 h-4 text-[#C8A951]" />
                     <span className="text-[9px] font-bold text-[#1A3A5C] uppercase tracking-wider">Frete Rápido</span>
@@ -291,6 +334,10 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ slug:
                   <div className="flex items-center gap-2">
                     <RotateCcw className="w-4 h-4 text-[#C8A951]" />
                     <span className="text-[9px] font-bold text-[#1A3A5C] uppercase tracking-wider">Troca Fácil</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Award className="w-4 h-4 text-[#C8A951]" />
+                    <span className="text-[9px] font-bold text-[#1A3A5C] uppercase tracking-wider">Produto Premium</span>
                   </div>
                 </div>
 

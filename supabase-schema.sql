@@ -41,7 +41,9 @@ CREATE TABLE IF NOT EXISTS public.products (
   stock_quantity INTEGER DEFAULT 0,
   min_stock INTEGER DEFAULT 5,
   is_active BOOLEAN DEFAULT true,
-  promo_price DECIMAL(10,2),
+  cost_price DECIMAL(10,2) DEFAULT 0,
+  wholesale_price DECIMAL(10,2) DEFAULT 0,
+  original_price DECIMAL(10,2) DEFAULT 0,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
