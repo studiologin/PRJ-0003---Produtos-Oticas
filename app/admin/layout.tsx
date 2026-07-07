@@ -34,13 +34,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     const fetchAdminUser = async () => {
-      const isMock = sessionStorage.getItem('mock_auth_admin') === 'true';
-      if (isMock) {
-        setProfile({ full_name: 'Administrador', role: 'admin' });
-        setLoading(false);
-        return;
-      }
-
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         router.push('/login');
@@ -66,11 +59,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [router]);
 
   const handleLogout = async () => {
-    if (sessionStorage.getItem('mock_auth_admin') === 'true') {
-      sessionStorage.removeItem('mock_auth_admin');
-      router.push('/login');
-      return;
-    }
     await supabase.auth.signOut();
     router.push('/');
   };

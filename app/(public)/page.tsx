@@ -85,6 +85,7 @@ export default function HomePage() {
             fill 
             className="object-cover object-center md:object-right"
             priority
+            sizes="(max-width: 768px) 100vw, 60vw"
             referrerPolicy="no-referrer"
           />
           {/* Subtle gradient to blend image with the left side background */}
@@ -182,6 +183,7 @@ export default function HomePage() {
                   alt="A Marca que entende a sua Ótica - Produtos Óticas" 
                   fill 
                   className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   referrerPolicy="no-referrer"
                 />
               </motion.div>
@@ -275,6 +277,7 @@ export default function HomePage() {
                 alt="Case de Couro Premium - Produtos Óticas" 
                 fill 
                 className="object-cover group-hover:scale-105 transition-transform duration-[2s] ease-out"
+                sizes="(max-width: 1024px) 100vw, 60vw"
                 referrerPolicy="no-referrer"
               />
               <div className="absolute inset-0 bg-gradient-to-r from-[#1A3A5C]/20 to-transparent"></div>
@@ -317,6 +320,7 @@ export default function HomePage() {
                     alt={item.title} 
                     fill 
                     className="object-cover group-hover:scale-110 transition-transform duration-700"
+                    sizes="(max-width: 768px) 100vw, 33vw"
                     referrerPolicy="no-referrer"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#1A3A5C]/80 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
@@ -350,6 +354,7 @@ export default function HomePage() {
                 alt="Capa Catálogo Produtos Óticas 2026" 
                 fill 
                 className="object-contain drop-shadow-[0_35px_35px_rgba(0,0,0,0.4)]"
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 referrerPolicy="no-referrer"
               />
             </motion.div>
@@ -462,6 +467,7 @@ export default function HomePage() {
             fill 
             className="object-cover"
             priority
+            sizes="100vw"
             referrerPolicy="no-referrer"
           />
         </div>
@@ -535,6 +541,7 @@ export default function HomePage() {
                       alt="Personalized Case and Cloth" 
                       fill 
                       className="object-contain drop-shadow-[0_25px_25px_rgba(0,0,0,0.15)]"
+                      sizes="(max-width: 768px) 100vw, 50vw"
                       referrerPolicy="no-referrer"
                     />
                   </motion.div>
@@ -656,6 +663,7 @@ export default function HomePage() {
                           alt={product.name} 
                           fill 
                           className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                          sizes="350px"
                           referrerPolicy="no-referrer"
                         />
                       </div>

@@ -51,6 +51,8 @@ export default function CheckoutPagamento() {
         body: JSON.stringify({
           ...formData,
           description: 'Pedido na Produtos Óticas',
+          cartItems: useCartStore.getState().items,
+          shippingCost: checkoutData.shippingCost,
         }),
       });
 

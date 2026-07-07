@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { getProductBySlug } from '@/lib/products';
 
 const MELHOR_ENVIO_API = 'https://melhorenvio.com.br/api/v2/me/shipment/calculate';
 
@@ -12,11 +13,18 @@ export async function POST(request: Request) {
 
     if (!MELHOR_ENVIO_TOKEN) {
       console.warn('MELHOR_ENVIO_TOKEN no configurado en el servidor.');
-      return NextResponse.json({ error: 'Token do Melhor Envio não configurado' }, { status: 500 });
+      return NextResponse.json({ error: 'Serviço de frete indisponível no momento' }, { status: 500 });
     }
 
     if (!to_cep) {
       return NextResponse.json({ error: 'CEP de destino é obrigatório' }, { status: 400 });
+    }
+
+    // Security (OWASP A06): Buscar preço real do banco para seguro, não confiar no cliente
+    let safeInsuranceValue = 0;
+    if (product && product.slug) {
+      const dbProduct = await getProductBySlug(product.slug);
+      safeInsuranceValue = dbProduct ? dbProduct.price : 0;
     }
 
     const payload = {
@@ -28,12 +36,12 @@ export async function POST(request: Request) {
       },
       products: [
         {
-          id: product.id.toString(),
+          id: product.id?.toString() || '0',
           width: 15,
           height: 10,
           length: 20,
           weight: 0.5,
-          insurance_value: product.price,
+          insurance_value: safeInsuranceValue > 0 ? safeInsuranceValue : (product.price || 0), // Fallback se não encontrar
           quantity: 1,
         },
       ],
@@ -55,12 +63,12 @@ export async function POST(request: Request) {
       console.error('------- DEBUG MELHOR ENVIO -------');
       console.error('Status:', response.status);
       console.error('Error Details:', JSON.stringify(errorData, null, 2));
-      console.error('Token Used (first 10):', MELHOR_ENVIO_TOKEN?.substring(0, 10));
       console.error('----------------------------------');
+      
+      // Security (OWASP A09): Não vazar detalhes internos do provedor para o cliente
       return NextResponse.json({ 
-        error: 'Erro ao calcular frete', 
-        details: errorData 
-      }, { status: response.status });
+        error: 'Não foi possível calcular o frete para este CEP no momento.' 
+      }, { status: 400 });
     }
 
     const data = await response.json();

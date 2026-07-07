@@ -135,15 +135,17 @@ function ProdutosContent() {
           fill 
           className="hidden md:block object-cover object-center"
           priority
+          sizes="100vw"
           referrerPolicy="no-referrer"
         />
         {/* Mobile Banner */}
         <Image 
-          src="https://jandmwnmaojswfwlrsva.supabase.co/storage/v1/object/public/Imagens%20do%20Site/capa-produto-po.png" 
+          src="https://jandmwnmaojswfwlrsva.supabase.co/storage/v1/object/public/Imagens%20do%20Site/capasobrehome-mo.png" 
           alt="Produtos Óticas Banner Mobile" 
           fill 
           className="block md:hidden object-cover object-center"
           priority
+          sizes="100vw"
           referrerPolicy="no-referrer"
         />
         <div className="absolute inset-0 bg-black/5"></div>
@@ -252,6 +254,7 @@ function ProdutosContent() {
                       alt={product.name} 
                       fill 
                       className="object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-500"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                       referrerPolicy="no-referrer"
                     />
                   </div>

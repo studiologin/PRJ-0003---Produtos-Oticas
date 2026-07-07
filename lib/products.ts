@@ -82,22 +82,22 @@ export const mockProducts: Product[] = [
 // Helper to map DB product to Product interface
 const mapProduct = (p: any): Product => ({
   id: p.id,
-  slug: p.slug,
+  slug: p.slug || p.id,
   name: p.name,
-  ref: p.ref,
-  price: Number(p.price),
+  ref: p.sku || p.ref,
+  price: Number(p.price || 0),
   cost_price: Number(p.cost_price || 0),
   wholesale_price: Number(p.wholesale_price || 0),
   original_price: Number(p.original_price || 0),
-  category: p.categories?.name || 'Geral',
-  description: p.description,
-  shortDescription: p.short_description,
-  image: p.image,
-  bestseller: p.bestseller,
-  new: p.new,
-  colors: p.colors,
-  specifications: p.specifications,
-  stock_quantity: p.stock_quantity,
+  category: p.category || p.categories?.name || 'Geral',
+  description: p.description || '',
+  shortDescription: p.short_description || p.shortDescription || '',
+  image: p.image || p.image_url || 'https://picsum.photos/seed/product1/800/800',
+  bestseller: p.bestseller || false,
+  new: p.new || false,
+  colors: p.colors || [],
+  specifications: p.specifications || [],
+  stock_quantity: p.stock || p.stock_quantity || 0,
   images: p.product_images 
     ? p.product_images.sort((a: any, b: any) => (b.is_cover ? 1 : 0) - (a.is_cover ? 1 : 0)).map((img: any) => img.url)
     : (p.image ? [p.image] : [])
@@ -106,10 +106,8 @@ const mapProduct = (p: any): Product => ({
 export async function getProducts(): Promise<Product[]> {
   try {
     const { data, error } = await supabase
-      .from('products')
-      .select('*, categories(name)')
-      .eq('is_active', true)
-      .order('created_at', { ascending: false });
+      .from('produtos')
+      .select('*');
 
     if (error) throw error;
     if (!data || data.length === 0) return mockProducts;

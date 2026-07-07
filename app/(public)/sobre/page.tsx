@@ -5,12 +5,24 @@ export default function SobrePage() {
     <div className="bg-warm-white text-[#1A3A5C]">
       {/* Banner Section - Sem texto, apenas imagem, ocupando a altura da tela */}
       <section className="relative h-screen w-full overflow-hidden rounded-b-[40px] md:rounded-b-[80px] shadow-xl z-50">
+        {/* Desktop Banner */}
         <Image 
           src="https://jandmwnmaojswfwlrsva.supabase.co/storage/v1/object/public/Imagens%20do%20Site/capa-sobre-po.png" 
-          alt="Produtos Óticas Sobre Banner" 
+          alt="Produtos Óticas Sobre Banner Desktop" 
           fill 
-          className="object-cover object-center"
+          className="hidden md:block object-cover object-center"
           priority
+          sizes="100vw"
+          referrerPolicy="no-referrer"
+        />
+        {/* Mobile Banner */}
+        <Image 
+          src="https://jandmwnmaojswfwlrsva.supabase.co/storage/v1/object/public/Imagens%20do%20Site/capa-sobre-po-mo.png" 
+          alt="Produtos Óticas Sobre Banner Mobile" 
+          fill 
+          className="block md:hidden object-cover object-center"
+          priority
+          sizes="100vw"
           referrerPolicy="no-referrer"
         />
         <div className="absolute inset-0 bg-black/5"></div>
@@ -39,6 +51,7 @@ export default function SobrePage() {
                   alt="Nosso escritório" 
                   fill 
                   className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   referrerPolicy="no-referrer"
                 />
               </div>
@@ -64,6 +77,7 @@ export default function SobrePage() {
                   alt="Nosso centro de distribuição" 
                   fill 
                   className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   referrerPolicy="no-referrer"
                 />
               </div>

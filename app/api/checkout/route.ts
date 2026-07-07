@@ -1,5 +1,6 @@
 import { MercadoPagoConfig, Payment } from 'mercadopago';
 import { NextResponse } from 'next/server';
+import { getProducts } from '@/lib/products';
 
 // Initialize the MercadoPago client
 // In a real scenario, handle missing tokens gracefully
@@ -21,15 +22,36 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
+    const { cartItems, shippingCost, ...paymentData } = body;
+
+    // Security (OWASP A06): Jamais confiar no transaction_amount vindo do cliente.
+    // Buscando preços REAIS do banco/mock.
+    let realTotal = shippingCost || 0;
+    
+    if (cartItems && Array.isArray(cartItems)) {
+      const dbProducts = await getProducts();
+      
+      realTotal += cartItems.reduce((total: number, item: any) => {
+        const dbProduct = dbProducts.find(p => p.id === item.product?.id);
+        if (!dbProduct) return total; // Ignora item inválido
+        
+        const currentPrice = (item.quantity >= 10 && dbProduct.wholesale_price && dbProduct.wholesale_price > 0)
+              ? dbProduct.wholesale_price
+              : dbProduct.price;
+        return total + (currentPrice * item.quantity);
+      }, 0);
+    }
+    
+    // Forçar o transaction_amount a ser o real (se calculado), senão usa fallback do body (inseguro mas necessário para fluxo legado)
+    const secureTransactionAmount = realTotal > 0 ? Number(realTotal.toFixed(2)) : body.transaction_amount;
+
     const payment = new Payment(client);
     
-    // Create the payment
-    // The body directly from the Payment Brick contains everything needed
     const response = await payment.create({
       body: {
-        ...body,
-        description: 'Compra na Produtos Óticas',
-        // Example: adding additional data like external_reference
+        ...paymentData,
+        transaction_amount: secureTransactionAmount,
+        description: paymentData.description || 'Compra na Produtos Óticas',
         external_reference: `ORDER-${Date.now()}`
       }
     });
